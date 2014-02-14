@@ -42,11 +42,36 @@
 <stat> := id ( <expr-list> ) ;
 
 # Expressions
-<expr> := <const>
-<expr> := <lvalue>
-<expr> := - <expr>
-<expr> := <expr> <binary-operator> <expr>
-<expr> := (<expr>)
+<expr> := <or-term> <expr-tail>
+<expr-tail> := NULL
+<expr-tail> := | <or-term> <expr-tail>
+<or-term> := <and-term> <or-term-tail>
+<or-term-tail> := NULL
+<or-term-tail> := & <and-term> <or-term-tail>
+<and-term> := <comp-term> <and-term-tail>
+<and-term-tail> := NULL
+<and-term-tail> := <comp-op> <comp-term> #no recursion because comparison is non-associative
+<comp-op> := =
+<comp-op> := <>
+<comp-op> := <
+<comp-op> := >
+<comp-op> := <=
+<comp-op> := >=
+<comp-term> := <term> <comp-term-tail>
+<comp-term-tail> := NULL
+<comp-term-tail> := <add-op> <term> <comp-term-tail>
+<add-op> := +
+<add-op> := -
+<term> := <factor> <term-tail>
+<term-tail> := NULL
+<term-tail> := <mult-op> <factor> <term-tali>
+<mult-op> := *
+<mult-op> := /
+<factor> := <const>
+<factor> := <lvalue>
+<factor> := - <factor>
+<factor> := (<expr>)
+
 <const> := INTLIT
 <const> := STRLIT
 <expr-list> := NULL
