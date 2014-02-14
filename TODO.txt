@@ -1,0 +1,15 @@
+Michael:
+[ ] Finish LL(1) grammar
+[ ] Convert to table
+[ ] Write test script and test cases
+Ben & Steven:
+[ ] Error states for malformed IDs, INTLITs, string escapes, unexpected EOF
+[ ] Support arbitrary characters in strings
+[ ] Support comments
+[ ] Escaped whitespace in strings?
+[ ] Interface: matchToken(type) and peekToken() - and Token class (type, value)
+[ ] Modify main() to take a filename argument
+Archie:
+[ ] Write the parser
+
+Report...?
