@@ -1,7 +1,6 @@
 package scanner;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,11 +13,11 @@ public class Scanner {
     //run this method to test the scanner
     public static void main (String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new FileReader("test.txt"));
-        List<ScannerState> tokens = new ArrayList<ScannerState>();
+        List<StateName> tokens = new ArrayList<StateName>();
         TokenResolver resolver = new TokenResolver();
 
-        ScannerState oldState = resolver.getState();
-        ScannerState newState = null;
+        State oldState = resolver.getState();
+        State newState = null;
 
         try {
             char c = (char) br.read();
@@ -26,23 +25,23 @@ public class Scanner {
                 oldState = resolver.getState();
                 newState = resolver.tokenize(c);
                 if (newState == null) {
-                    if (oldState.isTerminalState()) {
-                        tokens.add(oldState);
+                    if (oldState.getStateName().isTerminalState()) {
+                        tokens.add(oldState.getStateName());
                     }
                     else {
-                        tokens.add(ScannerState.ID);
+                        tokens.add(StateName.ID);
                     }
                     resolver.reset();
                     continue;
                 }
                 c = (char) br.read();
             }
-            tokens.add(newState);
+            tokens.add(newState.getStateName());
         } finally {
             br.close();
         }
 
-        for (ScannerState state : tokens) {
+        for (StateName state : tokens) {
             System.err.println(state.name());
         }
     }

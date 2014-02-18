@@ -1,7 +1,6 @@
 package scanner;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -10,17 +9,17 @@ import java.util.Set;
  */
 public class ResolutionStrategy {
 
-    private Map<CharacterClass, ScannerState> strategy;
+    private Map<CharacterClass, State> strategy;
 
     public ResolutionStrategy() {
-        strategy = new HashMap<CharacterClass, ScannerState>();
+        strategy = new HashMap<CharacterClass, State>();
     }
 
-    public void addStrategy(CharacterClass c, ScannerState s) {
+    public void addStrategy(CharacterClass c, State s) {
         strategy.put(c, s);
     }
 
-    public ScannerState nextState(CharacterClass c) {
+    public State nextState(CharacterClass c) {
         return strategy.get(c);
     }
 
