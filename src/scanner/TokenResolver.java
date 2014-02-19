@@ -1,7 +1,6 @@
 package scanner;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -11,12 +10,12 @@ import java.util.*;
  */
 public class TokenResolver {
 
-    private Map<ScannerState, ResolutionStrategy> strategies;
-    private ScannerState state;
+    private Map<State, ResolutionStrategy> strategies;
+    private State state;
 
     public TokenResolver() throws IOException {
 
-        strategies = new HashMap<ScannerState, ResolutionStrategy>();
+        strategies = new HashMap<State, ResolutionStrategy>();
         BufferedReader br = new BufferedReader(new FileReader("4240 Phase 1 DFA.csv"));
 
         try {
@@ -25,13 +24,40 @@ public class TokenResolver {
             while (line != null) {
                 //For every line, elements should have the initial state at index zero, the acceptable character class
                 // for that line's strategy at index 1, and the transition state at index 2.
-                String[] elements = line.split(",");
+                String[] elements = line.split("\t");
 
-                //TODO This next line could fail if the table is malformed.  There should probably be a check in place
-                // so that an exception could be thrown if applicable.
-                ScannerState initialState = Enum.valueOf(ScannerState.class, elements[0].trim().toUpperCase());
-                CharacterClass accepts = Enum.valueOf(CharacterClass.class, elements[1].trim().toUpperCase());
-                ScannerState finalState = Enum.valueOf(ScannerState.class, elements[2].trim().toUpperCase());
+                String initialStatePrefix = "";
+                StateName initialStateName = null;
+                String finalStatePrefix = "";
+                StateName finalStateName = null;
+                CharacterClass acceptClass = null;
+                String acceptCharacter = "";
+
+
+                try {
+                    initialStateName = Enum.valueOf(StateName.class, elements[0].trim().toUpperCase());
+                } catch(IllegalArgumentException e) {
+                    initialStatePrefix = elements[0].trim();
+                } try {
+                    finalStateName = Enum.valueOf(StateName.class, elements[2].trim().toUpperCase());
+                } catch(IllegalArgumentException e) {
+                    finalStatePrefix = elements[2].trim();
+                } try {
+                    acceptClass = Enum.valueOf(CharacterClass.class, elements[1].trim().toUpperCase());
+                } catch(IllegalArgumentException e) {
+                    acceptCharacter = elements[1].trim();
+                }
+
+                if (initialStateName == null) initialStateName = StateName.CHARACTER_ACCEPT;
+                if (finalStateName == null) finalStateName = StateName.CHARACTER_ACCEPT;
+                if (acceptClass == null) acceptClass = CharacterClass.SPECIFIC;
+
+
+
+                State initialState = new State(initialStateName, initialStatePrefix);
+                State finalState = new State(finalStateName, finalStatePrefix);
+                CharacterResolver accepts = new CharacterResolver(acceptClass, acceptCharacter);
+
                 if (strategies.get(initialState) == null) {
                     strategies.put(initialState, new ResolutionStrategy());
                 }
@@ -41,13 +67,13 @@ public class TokenResolver {
                 line = br.readLine();
             }
 
-            state = ScannerState.CHARACTER_ACCEPT;
+            state = new State(StateName.CHARACTER_ACCEPT);
         } finally {
             br.close();
         }
     }
 
-    public ScannerState tokenize(Character c) {
+    public State tokenize(Character c) {
         ResolutionStrategy strategy = strategies.get(state);
 
         // If there is no resolution strategy, then we must be at a terminal state.
@@ -57,15 +83,15 @@ public class TokenResolver {
 
         // We're going to mutate this set to help us select which character class to investigate.
         // Copying the set prevents us from accidentally mutating the underlying strategy by accident.
-        Set<CharacterClass> acceptableClasses = new HashSet<CharacterClass>(strategy.getAcceptableCharacterClasses());
+        Set<CharacterResolver> acceptableClasses = new HashSet<CharacterResolver>(strategy.getAcceptableCharacterClasses());
 
         while (acceptableClasses.size() > 0) {
-            CharacterClass mostSpecificClass = null;
+            CharacterResolver mostSpecificClass = null;
             double priority = Float.POSITIVE_INFINITY;
-            for (CharacterClass characterClass : acceptableClasses) {
-                if (characterClass.getPriority() < priority) {
-                    priority = characterClass.getPriority();
-                    mostSpecificClass = characterClass;
+            for (CharacterResolver characterResolver : acceptableClasses) {
+                if (characterResolver.getPriority() < priority) {
+                    priority = characterResolver.getPriority();
+                    mostSpecificClass = characterResolver;
                 }
             }
             acceptableClasses.remove(mostSpecificClass);
@@ -78,12 +104,12 @@ public class TokenResolver {
         return null;
     }
 
-    public ScannerState getState() {
+    public State getState() {
         return state;
     }
 
     public void reset() {
-        state = ScannerState.CHARACTER_ACCEPT;
+        state = new State(StateName.CHARACTER_ACCEPT);
     }
 
 }
