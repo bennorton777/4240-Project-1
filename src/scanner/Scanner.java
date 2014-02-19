@@ -32,6 +32,9 @@ public class Scanner {
                         tokens.add(StateName.ID);
                     }
                     resolver.reset();
+                    if (" ".equals(String.valueOf(c))) {
+                        c = (char) br.read();
+                    }
                     continue;
                 }
                 c = (char) br.read();

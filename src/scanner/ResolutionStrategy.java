@@ -9,21 +9,21 @@ import java.util.Set;
  */
 public class ResolutionStrategy {
 
-    private Map<CharacterClass, State> strategy;
+    private Map<CharacterResolver, State> strategy;
 
     public ResolutionStrategy() {
-        strategy = new HashMap<CharacterClass, State>();
+        strategy = new HashMap<CharacterResolver, State>();
     }
 
-    public void addStrategy(CharacterClass c, State s) {
+    public void addStrategy(CharacterResolver c, State s) {
         strategy.put(c, s);
     }
 
-    public State nextState(CharacterClass c) {
+    public State nextState(CharacterResolver c) {
         return strategy.get(c);
     }
 
-    public Set<CharacterClass> getAcceptableCharacterClasses() {
+    public Set<CharacterResolver> getAcceptableCharacterClasses() {
         return strategy.keySet();
     }
 }

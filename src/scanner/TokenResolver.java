@@ -24,12 +24,14 @@ public class TokenResolver {
             while (line != null) {
                 //For every line, elements should have the initial state at index zero, the acceptable character class
                 // for that line's strategy at index 1, and the transition state at index 2.
-                String[] elements = line.split(",");
+                String[] elements = line.split("\t");
 
                 String initialStatePrefix = "";
                 StateName initialStateName = null;
                 String finalStatePrefix = "";
                 StateName finalStateName = null;
+                CharacterClass acceptClass = null;
+                String acceptCharacter = "";
 
 
                 try {
@@ -40,15 +42,21 @@ public class TokenResolver {
                     finalStateName = Enum.valueOf(StateName.class, elements[2].trim().toUpperCase());
                 } catch(IllegalArgumentException e) {
                     finalStatePrefix = elements[2].trim();
+                } try {
+                    acceptClass = Enum.valueOf(CharacterClass.class, elements[1].trim().toUpperCase());
+                } catch(IllegalArgumentException e) {
+                    acceptCharacter = elements[1].trim();
                 }
 
                 if (initialStateName == null) initialStateName = StateName.CHARACTER_ACCEPT;
                 if (finalStateName == null) finalStateName = StateName.CHARACTER_ACCEPT;
+                if (acceptClass == null) acceptClass = CharacterClass.SPECIFIC;
 
-                CharacterClass accepts = Enum.valueOf(CharacterClass.class, elements[1].trim().toUpperCase());
+
 
                 State initialState = new State(initialStateName, initialStatePrefix);
                 State finalState = new State(finalStateName, finalStatePrefix);
+                CharacterResolver accepts = new CharacterResolver(acceptClass, acceptCharacter);
 
                 if (strategies.get(initialState) == null) {
                     strategies.put(initialState, new ResolutionStrategy());
@@ -75,15 +83,15 @@ public class TokenResolver {
 
         // We're going to mutate this set to help us select which character class to investigate.
         // Copying the set prevents us from accidentally mutating the underlying strategy by accident.
-        Set<CharacterClass> acceptableClasses = new HashSet<CharacterClass>(strategy.getAcceptableCharacterClasses());
+        Set<CharacterResolver> acceptableClasses = new HashSet<CharacterResolver>(strategy.getAcceptableCharacterClasses());
 
         while (acceptableClasses.size() > 0) {
-            CharacterClass mostSpecificClass = null;
+            CharacterResolver mostSpecificClass = null;
             double priority = Float.POSITIVE_INFINITY;
-            for (CharacterClass characterClass : acceptableClasses) {
-                if (characterClass.getPriority() < priority) {
-                    priority = characterClass.getPriority();
-                    mostSpecificClass = characterClass;
+            for (CharacterResolver characterResolver : acceptableClasses) {
+                if (characterResolver.getPriority() < priority) {
+                    priority = characterResolver.getPriority();
+                    mostSpecificClass = characterResolver;
                 }
             }
             acceptableClasses.remove(mostSpecificClass);
