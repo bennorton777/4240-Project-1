@@ -56,6 +56,7 @@ public enum StateName {
     TYPE(true),
     VAR(true),
     WHILE(true),
+    INT(true),
     ELSE(true);
 
     private final boolean IS_VALID_TOKEN;

@@ -5,6 +5,14 @@ package scanner;
  */
 public enum CharacterClass {
 
+    SPACE {
+        public int getPriority() {
+            return 0;
+        }
+        public boolean resolve(Character c) {
+            return " ".equals(String.valueOf(c)) || "\n".equals(String.valueOf(c)) || "\t".equals(String.valueOf(c));
+        }
+    },
     LETTER {
         public boolean resolve (Character c) {
             return Character.isLetter(c);

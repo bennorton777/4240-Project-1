@@ -18,23 +18,33 @@ public class Scanner {
 
         State oldState = resolver.getState();
         State newState = null;
+        boolean parsingComment = false;
 
         try {
             char c = (char) br.read();
             while (c != (char) -1) {
+                if (parsingComment) {
+                    String scan = "";
+                    while (!scan.endsWith("*/")) {
+                        scan+=String.valueOf((char) br.read());
+                    }
+                    c = (char) br.read();
+                    parsingComment = false;
+                }
                 oldState = resolver.getState();
                 newState = resolver.tokenize(c);
                 if (newState == null) {
+                    if (tokens.size() > 1 && tokens.get(tokens.size()-1) == StateName.DIV && oldState.getStateName() == StateName.MULT) {
+                        parsingComment = true;
+                        tokens.remove(tokens.size()-1);
+                    }
                     if (oldState.getStateName().isTerminalState()) {
-                        tokens.add(oldState.getStateName());
+                        if (!parsingComment) tokens.add(oldState.getStateName());
                     }
                     else {
-                        tokens.add(StateName.ID);
+                        if (!parsingComment) tokens.add(StateName.ID);
                     }
                     resolver.reset();
-                    if (" ".equals(String.valueOf(c))) {
-                        c = (char) br.read();
-                    }
                     continue;
                 }
                 c = (char) br.read();
@@ -43,6 +53,9 @@ public class Scanner {
         } finally {
             br.close();
         }
+
+        //TODO this is probably not the right way to handle this, but the code currently appends a CHARACTER_ACCEPT state to every file parsed.  So we're removing it.
+        tokens.remove(tokens.size()-1);
 
         for (StateName state : tokens) {
             System.err.println(state.name());
