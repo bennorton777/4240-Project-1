@@ -1,0 +1,85 @@
+# High-level stuff
+<tiger-program>	LET <declaration-segment> IN <stat-seq> END
+<declaration-segment>	  <type-declaration-list> <var-declaration-list> <funct-declaration-list>
+<type-declaration-list>	NULL
+<type-declaration-list>	<type-declaration> <type-declaration-list>
+<var-declaration-list>	 NULL
+<var-declaration-list>	 <var-declaration> <var-declaration-list>
+<funct-declaration-list>	   NULL
+<funct-declaration-list>	   <funct-declaration> <funct-declaration-list>
+
+# Declarations
+<type-declaration>	 TYPE ID EQ <type> SEMI
+<type>	 <type-id>
+<type>	 ARRAY LBRACK INTLIT RBRACK OF <type-id>
+<type-id>	  INT
+<type-id>	  STRING
+<type-id>	  ID
+
+<var-declaration>	  VAR <id-list> COLON <type-id> <optional-init> SEMI
+<id-list>	  ID <id-list-tail>
+<id-list-tail>	 COMMA ID <id-list-tail>
+<optional-init>	NULL
+<optional-init>	<const>
+
+<funct-declaration>	FUNCTION ID LPAREN <param-list> RPAREN <ret-type> BEGIN <stat-seq> END SEMI
+<param-list>	   NULL
+<param-list>	   <param> <param-list-tail>
+<param-list-tail>	  NULL
+<param-list-tail>	  COMMA <param> <param-list-tail>
+<ret-type>	 NULL
+<ret-type>	 COLON <type-id>
+<param>	ID COLON <type-id>
+
+# Statements
+<stat-seq>	 <stat> <stat-seq-tail>
+<stat-seq-tail>	<stat> <stat-seq-tail>
+<stat-seq-tail>	NULL
+<stat>	 IF <expr> THEN <stat-seq> <else-part> ENDIF SEMI
+<else-part>	ELSE <stat-seq>
+<else-part>	NULL
+<stat>	 WHILE <expr> DO <stat-seq> ENDDO SEMI
+<stat>	 FOR ID ASSIGN <expr> TO <expr> DO <stat-seq> ENDDO SEMI
+<stat>	 <lvalue> ASSIGN <expr> SEMI
+<stat>	 ID LPAREN <expr-list> RPAREN SEMI
+
+# Expressions
+<expr>	 <or-term> <expr-tail>
+<expr-tail>	NULL
+<expr-tail>	OR <or-term> <expr-tail>
+<or-term>	  <and-term> <or-term-tail>
+<or-term-tail>	 NULL
+<or-term-tail>	 AND <and-term> <or-term-tail>
+<and-term>	 <comp-term> <and-term-tail>
+<and-term-tail>	NULL
+<and-term-tail>	<comp-op> <comp-term> #no recursion because comparison is non-associative
+<comp-op>	  EQ
+<comp-op>	  NEQ
+<comp-op>	  LESSER
+<comp-op>	  GREATER
+<comp-op>	  LESSEREQ
+<comp-op>	  GREATEREQ
+<comp-term>	<term> <comp-term-tail>
+<comp-term-tail>	   NULL
+<comp-term-tail>	   <add-op> <term> <comp-term-tail>
+<add-op>	   PLUS
+<add-op>	   MINUS
+<term>	 <factor> <term-tail>
+<term-tail>	NULL
+<term-tail>	<mult-op> <factor> <term-tail>
+<mult-op>	  MULT
+<mult-op>	  DIV
+<factor>	   <const>
+<factor>	   <lvalue>
+<factor>	   MINUS <factor>
+<factor>	   LPAREN <expr> RPAREN
+
+<const>	INTLIT
+<const>	STRLIT
+<expr-list>	NULL
+<expr-list>	<expr> <expr-list-tail>
+<expr-list-tail>	   COMMA <expr> <expr-list-tail>
+<expr-list-tail>	   NULL
+<lvalue>	   ID <lvalue-tail>
+<lvalue-tail>	  LBRACK <expr> RBRACK <lvalue-tail>
+<lvalue-tail>	  NULL
