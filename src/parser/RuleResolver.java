@@ -1,7 +1,5 @@
 package parser;
 
-import com.sun.org.apache.xerces.internal.xni.grammars.Grammar;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,13 +9,16 @@ public class RuleResolver {
     static final String FILENAME = "tiger_grammar.txt";
 
     private List<Rule> ruleList;
+    private List<String> nonTerminals;
     private Map<String, Set<String>> first;
     private Map<String, Set<String>> follow;
+    private Map<String, Rule> table;
 
     public RuleResolver() throws IOException, GrammarException {
         ruleList = new ArrayList<Rule>();
         first = new HashMap<String, Set<String>>();
         follow = new HashMap<String, Set<String>>();
+        table = new HashMap<String, Rule>();
 
         BufferedReader br = new BufferedReader(new FileReader(FILENAME));
         try {
@@ -33,25 +34,65 @@ public class RuleResolver {
             br.close();
         }
 
-        //check that all syms are defined
-        List<String> names = new ArrayList<String>();
+        nonTerminals = new ArrayList<String>();
         for (Rule rule : ruleList) {
-            names.add(rule.getName());
+            nonTerminals.add(rule.getName());
         }
+
+        checkDefined();
+        computeFirstFollow();
+        fillTable();
+    }
+
+    public Rule getRule(String nonTerminal, String token) {
+        return table.get(nonTerminal+","+token);
+    }
+
+    private void fillTable() throws GrammarException {
         for (Rule rule : ruleList) {
+            //need to compute FIRST for this rule only
+            Set<String> firstX = new HashSet<String>();
+            boolean nullable = true;
             for (String sym : rule.getSeq()) {
                 if (sym.startsWith("<")) {
-                    //it's a nonterminal
-                    if (!names.contains(sym.replace("<","").replace(">",""))) {
-                        throw new GrammarException("Symbol " + sym.replace("<","").replace(">","") + " is not defined.");
-                    }
+                    firstX.addAll(first.get(sym.replace("<","").replace(">","")));
                 } else {
-                    //it's a single token
-                    //TODO validate
+                    firstX.add(sym);
+                }
+                if (!firstX.contains("NULL")) {
+                    nullable = false;
+                    break;
+                }
+            }
+            firstX.remove("NULL");
+
+            for (String tok : firstX) {
+                String key = rule.getName()+","+tok;
+                if (table.containsKey(key)) {
+                    throw new GrammarException("Grammar is not LL(1): "
+                    +key+" matches both\n\t"+table.get(key)+"\nand\n\t"+rule);
+                } else {
+                    table.put(key, rule);
+                }
+            }
+            if (nullable) {
+                for (String tok : follow.get("<"+rule.getName()+">")) {
+                    String key = rule.getName()+","+tok;
+                    if (table.containsKey(key)) {
+                        throw new GrammarException("Grammar is not LL(1): "
+                                +key+" matches both\n\t"+table.get(key)+"\nand\n\t"+rule);
+                    } else {
+                        table.put(key, rule);
+                    }
                 }
             }
         }
+    }
 
+    private void computeFirstFollow() {
+        Set<String> eof = new HashSet<String>();
+        eof.add("$");
+        follow.put("<"+ruleList.get(0).getName()+">", eof);
         boolean changed = false;
         do {
             changed = false;
@@ -168,6 +209,22 @@ public class RuleResolver {
         }
     }
 
+    private void checkDefined() throws GrammarException {
+        for (Rule rule : ruleList) {
+            for (String sym : rule.getSeq()) {
+                if (sym.startsWith("<")) {
+                    //it's a nonterminal
+                    if (!nonTerminals.contains(sym.replace("<","").replace(">",""))) {
+                        throw new GrammarException("Symbol " + sym.replace("<","").replace(">","") + " is not defined.");
+                    }
+                } else {
+                    //it's a single token
+                    //TODO validate
+                }
+            }
+        }
+    }
+
     private boolean isNullable(String sym) {
         if (!sym.startsWith("<") && !sym.equals("NULL")) return false;
         if (!first.containsKey(sym.replace("<","").replace(">",""))) return false;
@@ -190,18 +247,13 @@ public class RuleResolver {
         for (String sym : syms) {
             System.out.println("\tFollow["+sym+"] = "+ r.follow.get(sym));
         }
-    }
 
-    static class Rule {
-        private String name;
-        private String seq[];
-        public Rule(String name, String seq[]) {
-            this.name = name;
-            this.seq = seq;
+        System.out.println("Table:");
+        syms = r.table.keySet().toArray(new String[0]);
+        Arrays.sort(syms);
+        for (String sym : syms) {
+            System.out.println("\t"+sym+":\t"+r.table.get(sym));
         }
-
-        public String getName() { return name; }
-        public String[] getSeq() { return seq; }
     }
 
     static class GrammarException extends Exception {
