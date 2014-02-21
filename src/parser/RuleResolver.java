@@ -82,6 +82,7 @@ public class RuleResolver {
                 }
 
                 for (int i=0; i < rule.getSeq().length; i++) {
+                    String yi = rule.getSeq()[i];
                     boolean acc = true;
                     int k;
                     for (k=0; k < i; k++) {
@@ -92,7 +93,6 @@ public class RuleResolver {
                     }
                     if (acc) {
                         //FIRST[X] = FIRST[X] U FIRST[Yi]
-                        String yi = rule.getSeq()[i];
                         if (yi.startsWith("<")) {
                             if (first.containsKey(yi.replace("<","").replace(">",""))) {
                                 Set<String> firstYi = first.get(yi.replace("<","").replace(">",""));
@@ -105,7 +105,7 @@ public class RuleResolver {
                         }
                     }
 
-                    /*acc = true;
+                    acc = true;
                     for (k=i+1; k < rule.getSeq().length; k++) {
                         if (!isNullable(rule.getSeq()[k])) {
                             acc = false;
@@ -114,9 +114,21 @@ public class RuleResolver {
                     }
                     if (acc) {
                         //FOLLOW[Yi] = FOLLOW[Yi] U FOLLOW[X]
-                    }*/
+                        Set<String> followYi = follow.get(yi);
+                        if (followYi == null) {
+                            followYi = new HashSet<String>();
+                            follow.put(yi, followYi);
+                        }
+                        Set<String> followX = follow.get("<"+rule.getName()+">");
+                        if (followX == null) {
+                            followX = new HashSet<String>();
+                            follow.put("<"+rule.getName()+">", followX);
+                        }
+                        if (!followYi.containsAll(followX)) changed = true;
+                        followYi.addAll(followX);
+                    }
 
-                    /*for (int j=i+1; j < rule.getSeq().length; j++) {
+                    for (int j=i+1; j < rule.getSeq().length; j++) {
                         acc = true;
                         for (k=i+1; k < j; k++) {
                             if (!isNullable(rule.getSeq()[k])) {
@@ -126,11 +138,34 @@ public class RuleResolver {
                         }
                         if (acc) {
                             //FOLLOW[Yi] = FOLLOW[Yi] U FIRST[Yj]
+                            Set<String> followYi = follow.get(yi);
+                            if (followYi == null) {
+                                followYi = new HashSet<String>();
+                                follow.put(yi, followYi);
+                            }
+                            String yj = rule.getSeq()[j];
+                            Set<String> firstYj;
+                            if (yj.startsWith("<")) {
+                                firstYj = first.get(yj.replace("<","").replace(">",""));
+                                if (firstYj == null) {
+                                    firstYj = new HashSet<String>();
+                                    first.put(yj.replace("<","").replace(">",""), firstYj);
+                                }
+                                if (!followYi.containsAll(firstYj)) changed = true;
+                                followYi.addAll(firstYj);
+                            } else if (!yj.equals("NULL")) {
+                                if (!followYi.contains(yj)) changed = true;
+                                followYi.add(yj);
+                            }
                         }
-                    }*/
+                    }
                 }
             }
         } while (changed);
+
+        for (Set<String> syms : follow.values()) {
+            if (syms != null) syms.remove("NULL");
+        }
     }
 
     private boolean isNullable(String sym) {
@@ -142,15 +177,21 @@ public class RuleResolver {
     public static void main(String[] args) throws IOException, GrammarException {
         RuleResolver r = new RuleResolver();
         System.out.println("Grammar is OK");
-        //System.out.println("Nullables: "+r.nullable);
+
         System.out.println("First:");
         String[] syms = r.first.keySet().toArray(new String[0]);
         Arrays.sort(syms);
-
         for (String sym : syms) {
             System.out.println("\tFirst["+sym+"] = "+ r.first.get(sym));
         }
+        System.out.println("Follow:");
+        syms = r.follow.keySet().toArray(new String[0]);
+        Arrays.sort(syms);
+        for (String sym : syms) {
+            System.out.println("\tFollow["+sym+"] = "+ r.follow.get(sym));
+        }
     }
+
     static class Rule {
         private String name;
         private String seq[];
