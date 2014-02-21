@@ -1,0 +1,2 @@
+<s>	LPAREN <s> RPAREN <s>
+<s>	NULL
