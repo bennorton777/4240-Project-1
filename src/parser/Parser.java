@@ -24,16 +24,16 @@ public class Parser {
             Scanner scanner = new Scanner(args[0]);
 			List<Token> tokens = scanner.getTokens();
 
-			tokens.add(new Token(RuleResolver.EOF_SYMBOL,
-					RuleResolver.EOF_SYMBOL));
+            RuleResolver parserTable = new RuleResolver();
+			tokens.add(new Token(parserTable.EOF_SYMBOL,
+					parserTable.EOF_SYMBOL));
 
 			// for (Token tok : tokens) {
 			// System.err.println(tok.getType());
 			// }
 
-			RuleResolver parserTable = new RuleResolver();
-			symbolsToMatch.push(RuleResolver.EOF_SYMBOL);
-			symbolsToMatch.push(RuleResolver.START_SYMBOL);
+			symbolsToMatch.push(parserTable.EOF_SYMBOL);
+			symbolsToMatch.push(parserTable.START_SYMBOL);
 
 			parserTable.printTable();
 			
@@ -42,7 +42,7 @@ public class Parser {
 				input = tok.getType();
 				top = symbolsToMatch.pop();
 				while (!top.equals(input)
-						&& !top.equals(RuleResolver.NULL_SYMBOL)) {
+						&& !top.equals(parserTable.NULL_SYMBOL)) {
 					if (!parserTable.isNonTerminal(top))
 						throw (new Exception("NoWhereToGo : Terminal symbol '"
 								+ top + "' does not match input symbol '"

@@ -7,9 +7,9 @@ import java.util.*;
 
 public class RuleResolver {
 
-	public static final String EOF_SYMBOL = "$";
-	public static final String NULL_SYMBOL = "NULL";
-	public static final String START_SYMBOL;
+	public final String EOF_SYMBOL = "$";
+	public final String NULL_SYMBOL = "NULL";
+	public final String START_SYMBOL;
 
 	private static final String RULES_FILENAME = "tiger_grammar.txt";
 
@@ -18,14 +18,6 @@ public class RuleResolver {
 	private Map<String, Set<String>> first;
 	private Map<String, Set<String>> follow;
 	private Map<String, Rule> table;
-
-	// TODO need to extract from file.
-	static {
-		if (RULES_FILENAME.startsWith("tiger"))
-			START_SYMBOL = "tiger-program";
-		else
-			START_SYMBOL = "s";
-	}
 
 	public RuleResolver() throws IOException, GrammarException {
 
@@ -43,7 +35,6 @@ public class RuleResolver {
 				if (line.indexOf('\t') < 0)
 					throw new IOException("Could not parse rule: \"" + line
 							+ "\"");
-				line = line.replace("<", "").replace(">", "");
 				String kv[] = line.split("\t");
 				String symName = kv[0];
 				String components[] = kv[1].split("#")[0].trim().split(" ");
@@ -53,14 +44,11 @@ public class RuleResolver {
 			br.close();
 		}
 
-		nonTerminals = new HashSet<String>();
+        START_SYMBOL = ruleList.get(0).getName();
+
+        nonTerminals = new HashSet<String>();
 		for (Rule rule : ruleList) {
 			nonTerminals.add(rule.getName());
-//			System.out.print(rule.getName()+"->");
-//			for (String right : rule.getSeq()) {
-//				System.out.print(right+" ");
-//			}
-//			System.out.println();
 		}
 
 		checkDefined();
@@ -72,17 +60,22 @@ public class RuleResolver {
 		for (Rule rule : ruleList) {
 			// need to compute FIRST for this rule only
 			Set<String> firstX = new HashSet<String>();
+            Set<String> firstY;
 			boolean nullable = true;
 			for (String sym : rule.getSeq()) {
 				if (sym.startsWith("<")) {
-					firstX.addAll(first.get(sym.replace("<", "").replace(">",
-							"")));
+					firstY = first.get(sym);
+                    firstX.addAll(firstY);
+                    if (!firstY.contains(NULL_SYMBOL)) {
+                        nullable = false;
+                        break;
+                    }
 				} else {
 					firstX.add(sym);
-				}
-				if (!firstX.contains(NULL_SYMBOL)) {
-					nullable = false;
-					break;
+                    if (!sym.equals(NULL_SYMBOL)) {
+                        nullable = false;
+                        break;
+                    }
 				}
 			}
 			firstX.remove(NULL_SYMBOL);
@@ -98,7 +91,7 @@ public class RuleResolver {
 				}
 			}
 			if (nullable) {
-				for (String tok : follow.get("<" + rule.getName() + ">")) {
+				for (String tok : follow.get(rule.getName())) {
 					String key = rule.getName() + "," + tok;
 					if (table.containsKey(key)) {
 						throw new GrammarException("Grammar is not LL(1): "
@@ -115,7 +108,7 @@ public class RuleResolver {
 	private void computeFirstFollow() {
 		Set<String> eof = new HashSet<String>();
 		eof.add(EOF_SYMBOL);
-		follow.put("<" + ruleList.get(0).getName() + ">", eof);
+		follow.put(START_SYMBOL, eof);
 		boolean changed = false;
 		do {
 			changed = false;
@@ -158,10 +151,8 @@ public class RuleResolver {
 					if (acc) {
 						// FIRST[X] = FIRST[X] U FIRST[Yi]
 						if (yi.startsWith("<")) {
-							if (first.containsKey(yi.replace("<", "").replace(
-									">", ""))) {
-								Set<String> firstYi = first.get(yi.replace("<",
-										"").replace(">", ""));
+							if (first.containsKey(yi)) {
+								Set<String> firstYi = first.get(yi);
 								if (!firstX.containsAll(firstYi))
 									changed = true;
 								firstX.addAll(firstYi);
@@ -187,11 +178,10 @@ public class RuleResolver {
 							followYi = new HashSet<String>();
 							follow.put(yi, followYi);
 						}
-						Set<String> followX = follow.get("<" + rule.getName()
-								+ ">");
+						Set<String> followX = follow.get(rule.getName());
 						if (followX == null) {
 							followX = new HashSet<String>();
-							follow.put("<" + rule.getName() + ">", followX);
+							follow.put(rule.getName(), followX);
 						}
 						if (!followYi.containsAll(followX))
 							changed = true;
@@ -216,13 +206,10 @@ public class RuleResolver {
 							String yj = rule.getSeq()[j];
 							Set<String> firstYj;
 							if (yj.startsWith("<")) {
-								firstYj = first.get(yj.replace("<", "")
-										.replace(">", ""));
+								firstYj = first.get(yj);
 								if (firstYj == null) {
 									firstYj = new HashSet<String>();
-									first.put(
-											yj.replace("<", "")
-													.replace(">", ""), firstYj);
+									first.put(yj, firstYj);
 								}
 								if (!followYi.containsAll(firstYj))
 									changed = true;
@@ -249,11 +236,9 @@ public class RuleResolver {
 			for (String sym : rule.getSeq()) {
 				if (sym.startsWith("<")) {
 					// it's a nonterminal
-					if (!nonTerminals.contains(sym.replace("<", "").replace(
-							">", ""))) {
+					if (!nonTerminals.contains(sym)) {
 						throw new GrammarException("Symbol "
-								+ sym.replace("<", "").replace(">", "")
-								+ " is not defined.");
+								+ sym + " is not defined.");
 					}
 				} else {
 					// it's a single token
@@ -266,10 +251,9 @@ public class RuleResolver {
 	private boolean isNullable(String sym) {
 		if (!sym.startsWith("<") && !sym.equals(NULL_SYMBOL))
 			return false;
-		if (!first.containsKey(sym.replace("<", "").replace(">", "")))
+		if (!first.containsKey(sym))
 			return false;
-		return first.get(sym.replace("<", "").replace(">", ""))
-				.contains(NULL_SYMBOL);
+		return first.get(sym).contains(NULL_SYMBOL);
 	}
 
 	static class GrammarException extends Exception {

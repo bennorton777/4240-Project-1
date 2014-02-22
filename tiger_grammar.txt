@@ -41,8 +41,9 @@
 <else-part>	NULL
 <stat>	WHILE <expr> DO <stat-seq> ENDDO SEMI
 <stat>	FOR ID ASSIGN <expr> TO <expr> DO <stat-seq> ENDDO SEMI
-<stat>	<lvalue> ASSIGN <expr> SEMI
-<stat>	ID LPAREN <expr-list> RPAREN SEMI
+<stat>	ID <stat-id-tail>
+<stat-id-tail>	<lvalue-tail> ASSIGN <expr> SEMI
+<stat-id-tail>	LPAREN <expr-list> RPAREN SEMI
 
 # Expressions
 <expr>	<or-term> <expr-tail>
