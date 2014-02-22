@@ -45,7 +45,7 @@ public enum StateName {
     BEGIN(true),
     DO(true),
     FOR(true),
-    FUNC(true),
+    FUNCTION(true),
     IF(true),
     IN(true),
     LET(true),
