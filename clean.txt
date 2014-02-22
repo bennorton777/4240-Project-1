@@ -1,10 +1,9 @@
 let
-        type ArrayInt = array [100] of int; 
-        var X, Y : ArrayInt := 10; 
-        var i, sum :int := 0;
+        type ArrayInt = array [100] of int;         var X, Y : ArrayInt := 10;         var i, sum :int := 0;
+        var foo : string := nil;
 in
-        for i := 1 to 100 do 
-                sum := sum + X[i] * Y [i];
+        for i := 1 to 100 do                 sum := sum + X[i] * Y [i];
+                break;
         enddo;
-        printi(sum); 
-end￿
+        printi(sum); end
+￿
