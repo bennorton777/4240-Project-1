@@ -10,7 +10,7 @@ public enum CharacterClass {
             return 0;
         }
         public boolean resolve(Character c) {
-            return " ".equals(String.valueOf(c)) || "\n".equals(String.valueOf(c)) || "\t".equals(String.valueOf(c));
+            return " ".equals(String.valueOf(c)) || "\n".equals(String.valueOf(c)) || "\t".equals(String.valueOf(c)) || "\r".equals(String.valueOf(c));
         }
     },
     LETTER {
