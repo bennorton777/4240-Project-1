@@ -4,3 +4,7 @@
 out
 out/*
 out/
+.classpath
+.project
+.settings/
+*.class

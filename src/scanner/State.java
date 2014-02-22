@@ -3,6 +3,8 @@ package scanner;
 /**
  * This data structure is responsible for containing data about the current state of the application.  States also serve
  * as tokens, as referred to in the project writeup.
+ * 
+ * TODO Token class needs to be separated from State class.
  */
 public class State {
 
@@ -59,7 +61,7 @@ public class State {
 
     @Override
     public String toString() {
-        return "<" + _stateName.name() + ", " + _displayText.trim() + ">";
+        return "<" + _stateName.name() + ", " + _displayText + ">";
     }
 
     public String getPrefix() {
@@ -83,7 +85,7 @@ public class State {
     }
 
     public void setDisplayText(String _displayText) {
-        this._displayText = _displayText;
+        this._displayText = _displayText.trim();
     }
 
 }

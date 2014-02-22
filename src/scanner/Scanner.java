@@ -1,8 +1,7 @@
 package scanner;
 
-import com.sun.deploy.util.ArrayUtil;
-
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,9 +22,17 @@ public class Scanner {
      */
     public static void main (String[] args) throws IOException {
 
-        // TODO Filename should be parameterized once this is no longer a main method.
-        BufferedReader br = new BufferedReader(new FileReader("test.txt"));
-        List<State> tokens = new ArrayList<State>();
+        List<Token> tokens = getTokens("test.txt");
+        // TODO These print statements are debugging statements.  They should not be left in the final application.
+        for (Token tok : tokens) {
+            System.err.println(tok);           
+        }
+    }
+
+	public static List<Token> getTokens(String inputFileName) throws FileNotFoundException,
+			IOException {
+		BufferedReader br = new BufferedReader(new FileReader(inputFileName));
+        List<State> tokenStates = new ArrayList<State>();
         TokenResolver resolver = new TokenResolver();
 
         // The oldState refers to the state of the TokenResolver before reading in the most recent character,
@@ -61,24 +68,24 @@ public class Scanner {
                 // TODO This assumes that the input program will never be syntactically incorrect.  This will need to change.
                 if (newState == null) {
                     // Here we check to see if we got /* back to back, which tells us we're starting a comment.
-                    if (tokens.size() > 1 && tokens.get(tokens.size()-1).getStateName() == StateName.DIV && oldState.getStateName() == StateName.MULT) {
+                    if (tokenStates.size() > 1 && tokenStates.get(tokenStates.size()-1).getStateName() == StateName.DIV && oldState.getStateName() == StateName.MULT) {
                         parsingComment = true;
                         // We don't want the /* to be a part of the scanned input.
-                        tokens.remove(tokens.size()-1);
+                        tokenStates.remove(tokenStates.size()-1);
                     }
                     // We don't want to add to our list of tokens if we're currently dealing with a comment.
                     if (!parsingComment) {
                         if (oldState.getStateName().isTerminalState()) {
                             // Note that we're making a new state.  That's very important, because states are mutated
                             // as the application runs, and we don't want our list of tokens to be corrupted.
-                            tokens.add(new State(oldState));
+                            tokenStates.add(new State(oldState));
                         }
                         // The CHARACTER_ACCEPT state is not a terminal state, whereas ID is.  However, it's not always
                         // clear that we are dealing with an ID until the newState becomes null.
                         else {
                             State idState = new State(StateName.ID);
                             idState.setDisplayText(oldState.getDisplayText());
-                            tokens.add(idState);
+                            tokenStates.add(idState);
                         }
                     }
                     // We want the TokenResolver to reset its state after we add a token.
@@ -92,13 +99,13 @@ public class Scanner {
         } finally {
             br.close();
         }
-        // TODO These print statements are debugging statements.  They should not be left in the final application.
-        StringBuilder sb = new StringBuilder();
-        for (State state : tokens) {
-            System.err.println(state);
-            sb.append(state.getDisplayText());
-            sb.append(" ");
-        }
-        System.err.println("\n"+sb);
-    }
+        
+        List<Token> tokens = new ArrayList<Token>();
+        
+        for (State state : tokenStates) {
+			tokens.add(new Token(state.getStateName().name(), state.getDisplayText()));
+		}
+        
+		return tokens;
+	}
 }
