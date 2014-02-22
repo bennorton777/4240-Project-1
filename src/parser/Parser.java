@@ -21,7 +21,8 @@ public class Parser {
 		}
 
 		try {
-			List<Token> tokens = Scanner.getTokens(args[0]);
+            Scanner scanner = new Scanner(args[0]);
+			List<Token> tokens = scanner.getTokens();
 
 			tokens.add(new Token(RuleResolver.EOF_SYMBOL,
 					RuleResolver.EOF_SYMBOL));

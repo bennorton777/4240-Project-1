@@ -20,17 +20,13 @@ public class Scanner {
      * @param args
      * @throws IOException
      */
-    public static void main (String[] args) throws IOException {
 
-        List<Token> tokens = getTokens("test.txt");
-        // TODO These print statements are debugging statements.  They should not be left in the final application.
-        for (Token tok : tokens) {
-            System.err.println(tok);           
-        }
-    }
+    private List<Token> _tokens;
+    private int _tokenIndex;
 
-	public static List<Token> getTokens(String inputFileName) throws FileNotFoundException,
+	public Scanner(String inputFileName) throws FileNotFoundException,
 			IOException {
+
 		BufferedReader br = new BufferedReader(new FileReader(inputFileName));
         List<State> tokenStates = new ArrayList<State>();
         TokenResolver resolver = new TokenResolver();
@@ -99,13 +95,22 @@ public class Scanner {
         } finally {
             br.close();
         }
-        
-        List<Token> tokens = new ArrayList<Token>();
+
+        _tokenIndex = -1;
+        _tokens = new ArrayList<Token>();
         
         for (State state : tokenStates) {
-			tokens.add(new Token(state.getStateName().name(), state.getDisplayText()));
+			_tokens.add(new Token(state.getStateName().name(), state.getDisplayText()));
 		}
-        
-		return tokens;
 	}
+
+    public Token getNextToken() {
+        _tokenIndex++;
+        if (_tokenIndex >= _tokens.size()) return null;
+        return _tokens.get(_tokenIndex);
+    }
+
+    public List<Token> getTokens() {
+        return _tokens;
+    }
 }
