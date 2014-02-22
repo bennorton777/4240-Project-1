@@ -43,9 +43,8 @@ public class RuleResolver {
 				if (line.indexOf('\t') < 0)
 					throw new IOException("Could not parse rule: \"" + line
 							+ "\"");
-				line = line.replace("<", "").replace(">", "");
 				String kv[] = line.split("\t");
-				String symName = kv[0];
+				String symName = kv[0].replace("<","").replace(">","");
 				String components[] = kv[1].split("#")[0].trim().split(" ");
 				ruleList.add(new Rule(symName, components));
 			}
@@ -56,11 +55,6 @@ public class RuleResolver {
 		nonTerminals = new HashSet<String>();
 		for (Rule rule : ruleList) {
 			nonTerminals.add(rule.getName());
-//			System.out.print(rule.getName()+"->");
-//			for (String right : rule.getSeq()) {
-//				System.out.print(right+" ");
-//			}
-//			System.out.println();
 		}
 
 		checkDefined();
@@ -72,17 +66,23 @@ public class RuleResolver {
 		for (Rule rule : ruleList) {
 			// need to compute FIRST for this rule only
 			Set<String> firstX = new HashSet<String>();
+            Set<String> firstY;
 			boolean nullable = true;
 			for (String sym : rule.getSeq()) {
 				if (sym.startsWith("<")) {
-					firstX.addAll(first.get(sym.replace("<", "").replace(">",
-							"")));
+					firstY = first.get(sym.replace("<", "").replace(">",
+							""));
+                    firstX.addAll(firstY);
+                    if (!firstY.contains(NULL_SYMBOL)) {
+                        nullable = false;
+                        break;
+                    }
 				} else {
 					firstX.add(sym);
-				}
-				if (!firstX.contains(NULL_SYMBOL)) {
-					nullable = false;
-					break;
+                    if (!sym.equals(NULL_SYMBOL)) {
+                        nullable = false;
+                        break;
+                    }
 				}
 			}
 			firstX.remove(NULL_SYMBOL);
