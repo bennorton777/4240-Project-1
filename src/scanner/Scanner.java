@@ -1,9 +1,6 @@
 package scanner;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,94 +20,94 @@ public class Scanner {
 
     private List<Token> _tokens;
     private int _tokenIndex;
+    private char _currentChar;
+    BufferedReader _br;
+    TokenResolver _resolver;
+    boolean done = false;
+
+    // The oldState refers to the state of the TokenResolver before reading in the most recent character,
+    // whereas newState refers to the state afterwards.
+    State oldState, newState = null;
 
 	public Scanner(String inputFileName) throws FileNotFoundException,
 			IOException {
 
-		BufferedReader br = new BufferedReader(new FileReader(inputFileName));
-        List<State> tokenStates = new ArrayList<State>();
-        TokenResolver resolver = new TokenResolver();
+        _resolver = new TokenResolver();
+        _br = new BufferedReader(new FileReader(inputFileName));
+        // This function changes the file the buffered reader points at.
+        cleanComments();
 
-        // The oldState refers to the state of the TokenResolver before reading in the most recent character,
-        // whereas newState refers to the state afterwards.
-        State oldState, newState = null;
-
-        // We don't want to be trying to resolve tokens inside of a comment.
-        boolean parsingComment = false;
-
-        try {
-            char c = (char) br.read();
-            // While the character assigned to c isn't the EOF character
-            while (c != (char) -1) {
-
-                if (parsingComment) {
-                    String scan = "";
-                    while (!scan.endsWith("*/")) {
-                        c = (char) br.read();
-                        scan+=String.valueOf(c);
-                    }
-                    c = (char) br.read();
-                    parsingComment = false;
-                }
-
-                oldState = resolver.getState();
-                // The tokenize method returns the state of the TokenResolver, so we don't need a separate call.
-                newState = resolver.tokenize(c);
-
-                // The state of the TokenResolver will only be null if the character most recently received does not
-                // have a valid transition defined from the state the TokenResolver before receiving that character.
-                // If this is the case, then the state prior to receiving the most recent character must refer to a
-                // token.
-                // TODO This assumes that the input program will never be syntactically incorrect.  This will need to change.
-                if (newState == null) {
-                    // Here we check to see if we got /* back to back, which tells us we're starting a comment.
-                    if (tokenStates.size() > 1 && tokenStates.get(tokenStates.size()-1).getStateName() == StateName.DIV && oldState.getStateName() == StateName.MULT) {
-                        parsingComment = true;
-                        // We don't want the /* to be a part of the scanned input.
-                        tokenStates.remove(tokenStates.size()-1);
-                    }
-                    // We don't want to add to our list of tokens if we're currently dealing with a comment.
-                    if (!parsingComment) {
-                        if (oldState.getStateName().isTerminalState()) {
-                            // Note that we're making a new state.  That's very important, because states are mutated
-                            // as the application runs, and we don't want our list of tokens to be corrupted.
-                            tokenStates.add(new State(oldState));
-                        }
-                        // The CHARACTER_ACCEPT state is not a terminal state, whereas ID is.  However, it's not always
-                        // clear that we are dealing with an ID until the newState becomes null.
-                        else {
-                            State idState = new State(StateName.ID);
-                            idState.setDisplayText(oldState.getDisplayText());
-                            tokenStates.add(idState);
-                        }
-                    }
-                    // We want the TokenResolver to reset its state after we add a token.
-                    resolver.reset();
-                    // We don't want to read a new character when we add a token to the list, because the last character
-                    // considered will always be the character that begins the next token.  So we skip the read command below.
-                    continue;
-                }
-                c = (char) br.read();
-            }
-        } finally {
-            br.close();
-        }
-
-        _tokenIndex = -1;
-        _tokens = new ArrayList<Token>();
-        
-        for (State state : tokenStates) {
-			_tokens.add(new Token(state.getStateName().name(), state.getDisplayText()));
-		}
+        _currentChar = (char) _br.read();
 	}
 
-    public Token getNextToken() {
-        _tokenIndex++;
-        if (_tokenIndex >= _tokens.size()) return null;
-        return _tokens.get(_tokenIndex);
+    public Token getNextToken() throws IOException {
+        if (done) return null;
+
+        // We want the TokenResolver to reset its state after we add a token.
+        _resolver.reset();
+
+        // While the character assigned to _currentChar isn't the EOF character
+        while (_currentChar != (char) -1) {
+            oldState = _resolver.getState();
+            // The tokenize method returns the state of the TokenResolver, so we don't need a separate call.
+            newState = _resolver.tokenize(_currentChar);
+
+            // The state of the TokenResolver will only be null if the character most recently received does not
+            // have a valid transition defined from the state the TokenResolver before receiving that character.
+            // If this is the case, then the state prior to receiving the most recent character must refer to a
+            // token.
+            // TODO This assumes that the input program will never be syntactically incorrect.  This will need to change.
+            if (newState == null) {
+                if (oldState.getStateName().isTerminalState()) {
+                    // Note that we're making a new state.  That's very important, because states are mutated
+                    // as the application runs, and we don't want our list of tokens to be corrupted.
+                   return new Token(oldState.getStateName().name(), oldState.getDisplayText());
+                }
+                // The CHARACTER_ACCEPT state is not a terminal state, whereas ID is.  However, it's not always
+                // clear that we are dealing with an ID until the newState becomes null.
+                else {
+                    return new Token (StateName.ID.name(), oldState.getDisplayText());
+                }
+            }
+            _currentChar = (char) _br.read();
+        }
+        _br.close();
+        done = true;
+        return new Token(newState.getStateName().name(), newState.getDisplayText());
     }
 
     public List<Token> getTokens() {
         return _tokens;
+    }
+    // TODO this will throw an IOException (or some exception, anyway) if given an input program with fewer than two characters in it.  That's pretty dumb.
+    private void cleanComments() throws IOException {
+        boolean parsingComment = false;
+        PrintWriter writer = new PrintWriter("clean.txt", "UTF-8");
+        ArrayList<String> symbols = new ArrayList<String>();
+        String c = String.valueOf((char) _br.read());
+        symbols.add(c);
+        while (!c.equals(String.valueOf((char) -1))) {
+            if (parsingComment) {
+                String scan = "";
+                while (!scan.endsWith("*/")) {
+                    c = String.valueOf((char) _br.read());
+                    scan+=c;
+                }
+                c = String.valueOf((char) _br.read());
+                parsingComment = false;
+            }
+            c = String.valueOf((char) _br.read());
+            if(c.equals("*") && symbols.get(symbols.size() - 1).equals("/")) {
+                symbols.remove(symbols.size() - 1);
+                parsingComment = true;
+                continue;
+            }
+            symbols.add(c);
+        }
+        for (String s : symbols) {
+            writer.print(s);
+        }
+        writer.close();
+        _br = new BufferedReader(new FileReader("clean.txt"));
     }
 }
