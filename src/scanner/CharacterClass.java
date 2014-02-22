@@ -1,7 +1,13 @@
 package scanner;
 
 /**
- * Created by ben on 2/9/14.
+ * CharacterClass is responsible for enumerating all of the different groups of characters that may be referred to in
+ * the state transition csv.  If the input entry for a particular transition rule cannot be found in the enum, it is
+ * assumed to refer to a specific character, and will receive the {@link CharacterClass#SPECIFIC} designation.
+ * For more information on how that case is handled, see {@link scanner.CharacterResolver}, which is the primary consumer
+ * of this object type.
+ * CharacterClasses also know what priority they have relative to other CharacterClasses.  This allows a consumer of
+ * CharacterClasses to identify the most specific transition type allowed by a given input character.
  */
 public enum CharacterClass {
 

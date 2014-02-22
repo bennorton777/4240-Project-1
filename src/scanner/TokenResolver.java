@@ -6,13 +6,19 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Created by ben on 2/9/14.
+ * This class is a stateful object that takes in a character stream via the {@link scanner.TokenResolver#tokenize(Character)} method.
+ * It knows how to resolve characters based on a csv that describes state transitions.  This csv is read in the constructor.
  */
 public class TokenResolver {
 
+    // This represents the state transition graph.
     private Map<State, ResolutionStrategy> strategies;
+    // Current state of the TokenResolver
     private State state;
 
+    /** The constructor of this object formalizes the state transition graph based on a csv.
+     * @throws IOException
+     */
     public TokenResolver() throws IOException {
 
         strategies = new HashMap<State, ResolutionStrategy>();
@@ -34,6 +40,9 @@ public class TokenResolver {
                 String acceptCharacter = "";
 
 
+                /** This try/catch magic allows us to deal with states read in from the csv that are not explicitly
+                * described in the {@link scanner.StateName} enum
+                * */
                 try {
                     initialStateName = Enum.valueOf(StateName.class, elements[0].trim().toUpperCase());
                 } catch(IllegalArgumentException e) {
@@ -71,6 +80,12 @@ public class TokenResolver {
         }
     }
 
+    /**
+     * This method changes the state of the TokenResolver based on the input character.
+     * The rules that govern this transition are described in the csv read in the constructor.
+     * @param c
+     * @return
+     */
     public State tokenize(Character c) {
         ResolutionStrategy strategy = strategies.get(state);
 
@@ -83,6 +98,8 @@ public class TokenResolver {
         // Copying the set prevents us from accidentally mutating the underlying strategy by accident.
         Set<CharacterResolver> acceptableClasses = new HashSet<CharacterResolver>(strategy.getAcceptableCharacterClasses());
 
+        // We care about matching against the most specific transition rule that can be successfully applied considering
+        // the current state and the input character.
         while (acceptableClasses.size() > 0) {
             CharacterResolver mostSpecificClass = null;
             double priority = Float.POSITIVE_INFINITY;
