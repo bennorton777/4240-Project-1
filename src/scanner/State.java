@@ -6,12 +6,19 @@ package scanner;
 public class State {
     private String _prefix;
     private StateName _stateName;
+    private String _displayText;
     public State (StateName name) {
         this(name, "");
     }
     public State(StateName name, String prefix) {
         _prefix = prefix;
         _stateName = name;
+        _displayText = "";
+    }
+    public State(State state) {
+        _prefix = state.getPrefix();
+        _stateName = state.getStateName();
+        _displayText = state.getDisplayText();
     }
     @Override
     public int hashCode() {
@@ -27,6 +34,11 @@ public class State {
             throw new IllegalArgumentException("TODO When calling State.equals on something that isn't a state, the application should not die horribly.");
         }
     }
+
+    @Override
+    public String toString() {
+        return "<" + _stateName.name() + ", " + _displayText.trim() + ">";
+    }
     public String getPrefix() {
         return _prefix;
     }
@@ -41,5 +53,13 @@ public class State {
 
     public void setStateName(StateName _stateName) {
         this._stateName = _stateName;
+    }
+
+    public String getDisplayText() {
+        return _displayText;
+    }
+
+    public void setDisplayText(String _displayText) {
+        this._displayText = _displayText;
     }
 }

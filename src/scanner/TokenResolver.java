@@ -52,8 +52,6 @@ public class TokenResolver {
                 if (finalStateName == null) finalStateName = StateName.CHARACTER_ACCEPT;
                 if (acceptClass == null) acceptClass = CharacterClass.SPECIFIC;
 
-
-
                 State initialState = new State(initialStateName, initialStatePrefix);
                 State finalState = new State(finalStateName, finalStatePrefix);
                 CharacterResolver accepts = new CharacterResolver(acceptClass, acceptCharacter);
@@ -96,7 +94,9 @@ public class TokenResolver {
             }
             acceptableClasses.remove(mostSpecificClass);
             if (mostSpecificClass.resolve(c)) {
+                String displayText = state.getDisplayText();
                 state = strategy.nextState(mostSpecificClass);
+                state.setDisplayText(displayText + String.valueOf(c));
                 return state;
             }
         }
