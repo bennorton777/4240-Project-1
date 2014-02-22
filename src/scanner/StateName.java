@@ -1,7 +1,9 @@
 package scanner;
 
 /**
- * Created by ben on 2/9/14.
+ * StateName is considered functionally equivalent to the token types mentioned in the project writeup.
+ * StateNames know if they are terminal states.  (That is, a StateName knows if it is a proper token type, or an
+ * intermediate state used by the scanner.)
  */
 public enum StateName {
     CHARACTER_ACCEPT(false),
@@ -60,7 +62,6 @@ public enum StateName {
     ELSE(true);
 
     private final boolean IS_VALID_TOKEN;
-    private String currentData;
 
     StateName(boolean isValidToken) {
         this.IS_VALID_TOKEN = isValidToken;
@@ -68,4 +69,5 @@ public enum StateName {
     public boolean isTerminalState() {
         return this.IS_VALID_TOKEN;
     }
+
 }

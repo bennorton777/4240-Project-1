@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by ben on 2/9/14.
+ * This data structure matches CharacterResolvers to States.
  */
 public class ResolutionStrategy {
 
