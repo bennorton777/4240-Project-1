@@ -7,9 +7,9 @@ import java.util.*;
 
 public class RuleResolver {
 
-	public static final String EOF_SYMBOL = "$";
-	public static final String NULL_SYMBOL = "NULL";
-	public static final String START_SYMBOL;
+	public final String EOF_SYMBOL = "$";
+	public final String NULL_SYMBOL = "NULL";
+	public final String START_SYMBOL;
 
 	private static final String RULES_FILENAME = "tiger_grammar.txt";
 
@@ -18,14 +18,6 @@ public class RuleResolver {
 	private Map<String, Set<String>> first;
 	private Map<String, Set<String>> follow;
 	private Map<String, Rule> table;
-
-	// TODO need to extract from file.
-	static {
-		if (RULES_FILENAME.startsWith("tiger"))
-			START_SYMBOL = "tiger-program";
-		else
-			START_SYMBOL = "s";
-	}
 
 	public RuleResolver() throws IOException, GrammarException {
 
@@ -52,7 +44,9 @@ public class RuleResolver {
 			br.close();
 		}
 
-		nonTerminals = new HashSet<String>();
+        START_SYMBOL = ruleList.get(0).getName();
+
+        nonTerminals = new HashSet<String>();
 		for (Rule rule : ruleList) {
 			nonTerminals.add(rule.getName());
 		}
@@ -114,7 +108,7 @@ public class RuleResolver {
 	private void computeFirstFollow() {
 		Set<String> eof = new HashSet<String>();
 		eof.add(EOF_SYMBOL);
-		follow.put("<" + ruleList.get(0).getName() + ">", eof);
+		follow.put(START_SYMBOL, eof);
 		boolean changed = false;
 		do {
 			changed = false;
