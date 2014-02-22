@@ -18,8 +18,6 @@ public class Scanner {
      * @throws IOException
      */
 
-    private List<Token> _tokens;
-    private int _tokenIndex;
     private char _currentChar;
     BufferedReader _br;
     TokenResolver _resolver;
@@ -76,8 +74,14 @@ public class Scanner {
         return new Token(newState.getStateName().name(), newState.getDisplayText());
     }
 
-    public List<Token> getTokens() {
-        return _tokens;
+    public List<Token> getTokens() throws IOException {
+        List<Token> tokens = new ArrayList<Token>();
+        Token token = getNextToken();
+        while (token != null) {
+            tokens.add(token);
+            token = getNextToken();
+        }
+        return tokens;
     }
     // TODO this will throw an IOException (or some exception, anyway) if given an input program with fewer than two characters in it.  That's pretty dumb.
     private void cleanComments() throws IOException {

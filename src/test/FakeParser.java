@@ -5,6 +5,7 @@ import scanner.State;
 import scanner.Token;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * This class exists to demonstrate how to call the Scanner incrementally.
@@ -12,11 +13,23 @@ import java.io.IOException;
  */
 public class FakeParser {
     public static void main(String[] args) throws IOException {
+
+        System.out.println("Incremental:");
+        // do it incrementally
         Scanner scanner = new Scanner("test.txt");
         Token token = scanner.getNextToken();
         while (token != null) {
             System.out.println(token);
             token = scanner.getNextToken();
         }
+
+        System.out.println("\nAll at once:");
+        // Do it all at once
+        scanner = new Scanner("test.txt");
+        List<Token> tokens = scanner.getTokens();
+        for (Token t : tokens) {
+            System.out.println(t);
+        }
+
     }
 }
