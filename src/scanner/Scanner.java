@@ -74,6 +74,7 @@ public class Scanner {
         return new Token(newState.getStateName().name(), newState.getDisplayText());
     }
 
+    // DEPRECATED
     public List<Token> getTokens() throws IOException {
         List<Token> tokens = new ArrayList<Token>();
         Token token = getNextToken();
