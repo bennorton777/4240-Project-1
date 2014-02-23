@@ -6,25 +6,34 @@ import java.util.Collections;
 import java.util.List;
 
 public class TestRunner {
+    static String test_dir = "test_input";
     public static void main(String[] args) {
-        String test_dir;
+        List<File> inputs;
         if (args.length == 0) {
-            test_dir = "test_input";
+            File folder = new File(test_dir);
+            if (!folder.isDirectory()) {
+                System.err.println(folder.getAbsolutePath() + " is not a directory.");
+                return;
+            }
+            inputs = getTestFiles(folder);
+            Collections.sort(inputs);
         } else if (args.length == 1) {
-            test_dir = args[0];
+            File file = new File(args[0]);
+            if (!file.exists()) {
+                System.err.println(file.getAbsolutePath() + " does not exist.");
+                return;
+            }
+            File outFile = new File(file.getAbsolutePath().replaceAll("\\.tiger$",".out"));
+            if (!outFile.exists()) {
+                System.err.println(outFile.getAbsolutePath() + " does not exist.");
+                return;
+            }
+            inputs = new ArrayList<File>();
+            inputs.add(file);
         } else {
-            System.err.println("Usage: TestRunner [test_dir]");
+            System.err.println("Usage: TestRunner [tiger_file]");
             return;
         }
-
-        File folder = new File(test_dir);
-        if (!folder.isDirectory()) {
-            System.err.println(folder.getAbsolutePath() + " is not a directory.");
-            return;
-        }
-
-        List<File> inputs = getTestFiles(folder);
-        Collections.sort(inputs);
 
         PrintStream oldOut = System.out;
         PrintStream oldErr = System.err;
