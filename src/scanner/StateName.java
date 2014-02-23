@@ -44,20 +44,18 @@ public enum StateName {
     BEGIN(true),
     DO(true),
     FOR(true),
-    FUNCTION(true),
+    FUNC(true),
     IF(true),
     IN(true),
     LET(true),
     NIL(true),
     OF(true),
     RETURN(true),
-    STRING(true),
     TO(true),
     THEN(true),
     TYPE(true),
     VAR(true),
     WHILE(true),
-    INT(true),
     ELSE(true);
 
     private final boolean IS_VALID_TOKEN;

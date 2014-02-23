@@ -149,10 +149,11 @@ public class RuleResolver {
 						}
 					}
 					if (acc) {
-						// FIRST[X] = FIRST[X] U FIRST[Yi]
+						// FIRST[X] = FIRST[X] U FIRST[Yi]-NULL
 						if (yi.startsWith("<")) {
 							if (first.containsKey(yi)) {
-								Set<String> firstYi = first.get(yi);
+								Set<String> firstYi = new HashSet<String>(first.get(yi));
+                                firstYi.remove(NULL_SYMBOL);
 								if (!firstX.containsAll(firstYi))
 									changed = true;
 								firstX.addAll(firstYi);
@@ -172,17 +173,17 @@ public class RuleResolver {
 						}
 					}
 					if (acc) {
-						// FOLLOW[Yi] = FOLLOW[Yi] U FOLLOW[X]
+						// FOLLOW[Yi] = FOLLOW[Yi] U FOLLOW[X]-NULL
 						Set<String> followYi = follow.get(yi);
 						if (followYi == null) {
 							followYi = new HashSet<String>();
 							follow.put(yi, followYi);
 						}
-						Set<String> followX = follow.get(rule.getName());
-						if (followX == null) {
-							followX = new HashSet<String>();
-							follow.put(rule.getName(), followX);
-						}
+                        if (!follow.containsKey(rule.getName())) {
+                            follow.put(rule.getName(), new HashSet<String>());
+                        }
+						Set<String> followX = new HashSet<String>(follow.get(rule.getName()));
+                        followX.remove(NULL_SYMBOL);
 						if (!followYi.containsAll(followX))
 							changed = true;
 						followYi.addAll(followX);
@@ -197,7 +198,7 @@ public class RuleResolver {
 							}
 						}
 						if (acc) {
-							// FOLLOW[Yi] = FOLLOW[Yi] U FIRST[Yj]
+							// FOLLOW[Yi] = FOLLOW[Yi] U FIRST[Yj]-NULL
 							Set<String> followYi = follow.get(yi);
 							if (followYi == null) {
 								followYi = new HashSet<String>();
@@ -206,11 +207,11 @@ public class RuleResolver {
 							String yj = rule.getSeq()[j];
 							Set<String> firstYj;
 							if (yj.startsWith("<")) {
-								firstYj = first.get(yj);
-								if (firstYj == null) {
-									firstYj = new HashSet<String>();
-									first.put(yj, firstYj);
-								}
+                                if (!first.containsKey(yj)) {
+                                    first.put(yj, new HashSet<String>());
+                                }
+								firstYj = new HashSet<String>(first.get(yj));
+                                firstYj.remove(NULL_SYMBOL);
 								if (!followYi.containsAll(firstYj))
 									changed = true;
 								followYi.addAll(firstYj);
