@@ -11,7 +11,9 @@
 # Declarations
 <type-declaration>	TYPE ID EQ <type> SEMI
 <type>	<type-id>
-<type>	ARRAY LBRACK INTLIT RBRACK OF <type-id>
+<type>	ARRAY LBRACK INTLIT RBRACK <type-dim> OF <type-id>
+<type-dim>	NULL
+<type-dim>	LBRACK INTLIT RBRACK <type-dim>
 <type-id>	INT
 <type-id>	STRING
 <type-id>	ID
@@ -41,6 +43,8 @@
 <else-part>	NULL
 <stat>	WHILE <expr> DO <stat-seq> ENDDO SEMI
 <stat>	FOR ID ASSIGN <expr> TO <expr> DO <stat-seq> ENDDO SEMI
+<stat>	BREAK SEMI
+<stat>	RETURN <expr> SEMI
 <stat>	ID <stat-id-tail>
 <stat-id-tail>	<lvalue-tail> ASSIGN <expr> SEMI
 <stat-id-tail>	LPAREN <expr-list> RPAREN SEMI
@@ -78,6 +82,7 @@
 
 <const>	INTLIT
 <const>	STRLIT
+<const>	NIL
 <expr-list>	NULL
 <expr-list>	<expr> <expr-list-tail>
 <expr-list-tail>	COMMA <expr> <expr-list-tail>
