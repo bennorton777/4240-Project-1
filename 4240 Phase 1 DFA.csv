@@ -35,7 +35,7 @@ b	e	be
 br	e	bre
 be	g	beg
 bre	a	brea
-beg	I	begi
+beg	i	begi
 brea	k	BREAK
 begi	n	BEGIN
 CHARACTER_ACCEPT	d	d
@@ -57,11 +57,14 @@ f	o	fo
 f	u	fu
 fo	r	FOR
 fu	n	fun
-fun	c	FUNC
+fun	c	func
+func	t	funct
+funct	i	functi
+functi	o	functio
+functio	n	FUNC
 CHARACTER_ACCEPT	i	i
 i	f	IF
 i	n	IN
-IN	t	INT
 CHARACTER_ACCEPT	l	l
 l	e	le
 le	t	LET
@@ -76,12 +79,6 @@ re	t	ret
 ret	u	retu
 retu	r	retur
 retur	n	RETURN
-CHARACTER_ACCEPT	s	s
-s	t	st
-st	r	str
-str	i	stri
-stri	n	strin
-strin	g	STRING
 CHARACTER_ACCEPT	t	t
 t	o	TO
 t	h	th
@@ -118,7 +115,6 @@ LET	ALPHANUMERIC	ID
 NIL	ALPHANUMERIC	ID
 OF	ALPHANUMERIC	ID
 RETURN	ALPHANUMERIC	ID
-STRING	ALPHANUMERIC	ID
 TO	ALPHANUMERIC	ID
 THEN	ALPHANUMERIC	ID
 TYPE	ALPHANUMERIC	ID
