@@ -45,18 +45,36 @@
 <stat>	FOR ID ASSIGN <expr> TO <expr> DO <stat-seq> ENDDO SEMI
 <stat>	BREAK SEMI
 <stat>	RETURN <expr> SEMI
-<stat>	ID <stat-id-tail>
-<stat-id-tail>	<lvalue-tail> ASSIGN <expr> SEMI
-<stat-id-tail>	LPAREN <expr-list> RPAREN SEMI
+#<stat>	ID <stat-id-tail>
+#<stat-id-tail>	<lvalue-tail> ASSIGN <expr> SEMI
+#<stat-id-tail>	LPAREN <expr-list> RPAREN SEMI
+
+#<stat>	<opt-prefix> ID LPAREN <expr-list> RPAREN SEMI
+#<stat>	<lvalue> ASSIGN <expr> SEMI
+#<opt-prefix>	<lvalue> ASSIGN
+#<opt-prefix>	NULL
+<stat>	ID <stat-after-id>
+<stat-after-id>	LPAREN <expr-list> RPAREN SEMI
+<stat-after-id>	<lvalue-tail> ASSIGN <rvalue> SEMI
+<rvalue>	<expr-no-lvalue>
+<rvalue>	ID <expr-or-func>
+<expr-or-func>	LPAREN <expr-list> RPAREN
+<expr-or-func>	<expr-after-id>
 
 # Expressions
 <expr>	<or-term> <expr-tail>
+<expr-no-lvalue>	<or-term-no-lvalue> <expr-tail>
+<expr-after-id>	<or-term-after-id> <expr-tail>
 <expr-tail>	NULL
 <expr-tail>	OR <or-term> <expr-tail>
 <or-term>	<and-term> <or-term-tail>
+<or-term-no-lvalue>	<and-term-no-lvalue> <or-term-tail>
+<or-term-after-id>	<and-term-after-id> <or-term-tail>
 <or-term-tail>	NULL
 <or-term-tail>	AND <and-term> <or-term-tail>
 <and-term>	<comp-term> <and-term-tail>
+<and-term-no-lvalue>	<comp-term-no-lvalue> <and-term-tail>
+<and-term-after-id>	<comp-term-after-id> <and-term-tail>
 <and-term-tail>	NULL
 <and-term-tail>	<comp-op> <comp-term> #no recursion because comparison is non-associative
 <comp-op>	EQ
@@ -66,19 +84,24 @@
 <comp-op>	LESSEREQ
 <comp-op>	GREATEREQ
 <comp-term>	<term> <comp-term-tail>
+<comp-term-no-lvalue>	<term-no-lvalue> <comp-term-tail>
+<comp-term-after-id>	<term-after-id> <comp-term-tail>
 <comp-term-tail>	NULL
 <comp-term-tail>	<add-op> <term> <comp-term-tail>
 <add-op>	PLUS
 <add-op>	MINUS
 <term>	<factor> <term-tail>
+<term-no-lvalue>	<factor-no-lvalue> <term-tail>
+<term-after-id>	<lvalue-tail> <term-tail>
 <term-tail>	NULL
 <term-tail>	<mult-op> <factor> <term-tail>
 <mult-op>	MULT
 <mult-op>	DIV
-<factor>	<const>
+<factor>	<factor-no-lvalue>
 <factor>	<lvalue>
-<factor>	MINUS <factor>
-<factor>	LPAREN <expr> RPAREN
+<factor-no-lvalue>	<const>
+<factor-no-lvalue>	MINUS <factor>
+<factor-no-lvalue>	LPAREN <expr> RPAREN
 
 <const>	INTLIT
 <const>	STRLIT
