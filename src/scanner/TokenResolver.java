@@ -117,6 +117,13 @@ public class TokenResolver {
                 return state;
             }
         }
+        if ((state.getStateName() == StateName.CHARACTER_ACCEPT || state.getStateName() == StateName.ID) && CharacterClass.ALPHANUMERIC.resolve(c)) {
+            State newState = new State(StateName.ID);
+            newState.setDisplayText(state.getDisplayText()+String.valueOf(c));
+            state = newState;
+            return state;
+        }
+
         // Return null unless we have successfully changed state
         return null;
     }
