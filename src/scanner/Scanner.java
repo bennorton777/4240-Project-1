@@ -80,8 +80,12 @@ public class Scanner {
 				// clear that we are dealing with an ID until the newState
 				// becomes null.
 				else {
-					return new Token(StateName.ID.name(),
-							oldState.getDisplayText());
+					Token temp = new Token(StateName.ID.name(), oldState.getDisplayText());
+                    // If the token value is empty, it means our scanner did not find a state for collected input.
+                    // So, we throw an exception. Otherwise, we can just return the token.
+                    if (temp.getValue() == "")
+                        throw new IOException("There is a syntax error in your code. Please correct this.");
+                    return temp;
 				}
 			}
 			_currentChar = (char) _br.read();
