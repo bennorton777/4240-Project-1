@@ -35,7 +35,7 @@ public class Parser {
 			symbolsToMatch.push(parserTable.EOF_SYMBOL);
 			symbolsToMatch.push(parserTable.START_SYMBOL);
 
-			parserTable.printTable();
+			//parserTable.printTable();
 			
 			String input, top;
 			for (Token tok : tokens) {
@@ -57,23 +57,21 @@ public class Parser {
 						symbolsToMatch.push(rhs[i]);
 					}
 
-					System.out.println();
+					//System.out.println();
 					top = symbolsToMatch.pop();
 					// System.out.println("Loop matching symbol '" + top
 					// + "' for input symbol '" + input + "'");
 				}
 			}
-			System.out.println("Parse successfull");
+			System.out.println("successful parse");
 
 		} catch (GrammarException e) {
-			System.out.println(e);
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
 			System.out.println("Invalid filename..");
 		} catch (IOException e) {
 			System.out.println("IOException while reading file..");
 		} catch (Exception e) {
-			System.out.println(e);
 			e.printStackTrace();
 		}
 	}
