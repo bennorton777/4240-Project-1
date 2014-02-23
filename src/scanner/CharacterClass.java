@@ -51,6 +51,26 @@ public enum CharacterClass {
             return 3;
         }
     },
+    ANY_STRING {
+        public boolean resolve(Character c) {
+            if (!c.equals("\\") || !c.equals("\""))
+                return true;
+            return false;
+        }
+        public int getPriority() {
+            return 2;
+        }
+    },
+    ESCAPE_CHAR {
+        public boolean resolve(Character c) {
+            if (!c.equals("\\") || !c.equals("\""))
+                return true;
+            return false;
+        }
+        public int getPriority() {
+            return 2;
+        }
+    },
     SPECIFIC {
         public int getPriority() {
             return 0;
