@@ -20,35 +20,44 @@ public class Parser {
 			return;
 		}
 
-		try {
-            Scanner scanner = new Scanner(args[0]);
-			List<Token> tokens = scanner.getTokens();
+		boolean show_flow = false;
 
-            RuleResolver parserTable = new RuleResolver();
-			tokens.add(new Token(parserTable.EOF_SYMBOL,
-					parserTable.EOF_SYMBOL));
+		try {
+			if (show_flow)
+				Scanner.printTokens(args[0]);
+			Scanner scanner = new Scanner(args[0]);
+			RuleResolver parserTable = new RuleResolver();
+
+			// List<Token> tokens = scanner.getTokens();
+			// tokens.add(new Token(RuleResolver.EOF_SYMBOL,
+			// RuleResolver.EOF_SYMBOL));
 
 			// for (Token tok : tokens) {
-			// System.err.println(tok.getType());
+			// System.err.print(tok.getType() + " ");
 			// }
 
-			symbolsToMatch.push(parserTable.EOF_SYMBOL);
+			symbolsToMatch.push(RuleResolver.EOF_SYMBOL);
 			symbolsToMatch.push(parserTable.START_SYMBOL);
 
-			//parserTable.printTable();
-			
+			// parserTable.printTable();
+			// System.out.println();
+
 			String input, top;
-			for (Token tok : tokens) {
+			Token tok = scanner.getNextToken();
+			while (!tok.getType().equals(RuleResolver.EOF_SYMBOL)) {
 				input = tok.getType();
 				top = symbolsToMatch.pop();
-				while (!top.equals(input)
-						&& !top.equals(parserTable.NULL_SYMBOL)) {
+				if (show_flow)
+					System.out.println("Matching symbol '" + top
+							+ "' for input symbol '" + input + "'");
+				while (!top.equals(input)) {
 					if (!parserTable.isNonTerminal(top))
 						throw (new Exception("NoWhereToGo : Terminal symbol '"
 								+ top + "' does not match input symbol '"
 								+ input + "'"));
 					Rule expansion = parserTable.getRule(top, input);
-					// System.out.println("Expanding rule:" + expansion);
+					if (show_flow)
+						System.out.println("Expanding rule:" + expansion);
 					if (expansion == null)
 						throw (new Exception("No expansion for symbol '" + top
 								+ "' on input symbol '" + input + "'"));
@@ -57,11 +66,16 @@ public class Parser {
 						symbolsToMatch.push(rhs[i]);
 					}
 
-					//System.out.println();
-					top = symbolsToMatch.pop();
-					// System.out.println("Loop matching symbol '" + top
-					// + "' for input symbol '" + input + "'");
+					do {
+						top = symbolsToMatch.pop();
+					} while (top.equals(RuleResolver.NULL_SYMBOL));
+					if (show_flow)
+						System.out.println("Loop matching symbol '" + top
+								+ "' for input symbol '" + input + "'");
 				}
+				tok = scanner.getNextToken();
+				if (show_flow)
+					System.out.println();
 			}
 			System.out.println("successful parse");
 

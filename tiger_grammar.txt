@@ -25,7 +25,7 @@
 <optional-init>	NULL
 <optional-init>	ASSIGN <const>
 
-<funct-declaration>	FUNCTION ID LPAREN <param-list> RPAREN <ret-type> BEGIN <stat-seq> END SEMI
+<funct-declaration>	FUNC ID LPAREN <param-list> RPAREN <ret-type> BEGIN <stat-seq> END SEMI
 <param-list>	NULL
 <param-list>	<param> <param-list-tail>
 <param-list-tail>	NULL

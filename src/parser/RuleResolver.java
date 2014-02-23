@@ -7,8 +7,8 @@ import java.util.*;
 
 public class RuleResolver {
 
-	public final String EOF_SYMBOL = "$";
-	public final String NULL_SYMBOL = "NULL";
+	public final static String EOF_SYMBOL = "$";
+	public final static String NULL_SYMBOL = "NULL";
 	public final String START_SYMBOL;
 
 	private static final String RULES_FILENAME = "tiger_grammar.txt";
