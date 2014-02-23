@@ -43,7 +43,7 @@ public class TestRunner {
             System.setOut(oldOut);
             System.setErr(oldErr);
 
-            File outFile = new File(input.getAbsolutePath().replaceAll("\\.tiger$",".out"));
+            File outFile = new File(input.getAbsolutePath().replaceAll("\\.tiger$", ".out"));
             String expected;
             try {
                 expected = readFile(outFile);
@@ -78,7 +78,15 @@ public class TestRunner {
     }
 
     private static void parseFile(File file) throws IOException {
-        test.FakeParser.main(new String[]{file.getAbsolutePath()});
+        scanner.Scanner scanner = new scanner.Scanner(file.getAbsolutePath());
+        scanner.Token token = scanner.getNextToken();
+        while (token != null) {
+            System.out.print(token.getType());
+            token = scanner.getNextToken();
+            if (token != null) System.out.print(" ");
+        }
+        System.out.print("\n");
+        parser.Parser.main(new String[]{file.getAbsolutePath()});
     }
 
     private static String readFile(File file) throws IOException {
