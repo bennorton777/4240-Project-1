@@ -63,7 +63,17 @@ public enum CharacterClass {
     },
     ESCAPE_CHAR {
         public boolean resolve(Character c) {
-            if (!c.equals("\\") || !c.equals("\""))
+            if (!c.equals('\\') || !c.equals('"'))
+                return true;
+            return false;
+        }
+        public int getPriority() {
+            return 2;
+        }
+    },
+    ID_CHAR {
+        public boolean resolve(Character c) {
+            if (LETTER.resolve(c) || DIGIT.resolve(c) || c.equals('_'))
                 return true;
             return false;
         }
