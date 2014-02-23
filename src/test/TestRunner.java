@@ -2,6 +2,7 @@ package test;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TestRunner {
@@ -23,6 +24,7 @@ public class TestRunner {
         }
 
         List<File> inputs = getTestFiles(folder);
+        Collections.sort(inputs);
 
         PrintStream oldOut = System.out;
         PrintStream oldErr = System.err;
