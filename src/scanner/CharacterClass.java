@@ -73,12 +73,10 @@ public enum CharacterClass {
     },
     ID_CHAR {
         public boolean resolve(Character c) {
-            if (LETTER.resolve(c) || DIGIT.resolve(c) || c.equals('_'))
-                return true;
-            return false;
+            return (LETTER.resolve(c) || DIGIT.resolve(c) || "_".equals(String.valueOf(c)));
         }
         public int getPriority() {
-            return 2;
+            return 0;
         }
     },
     SPECIFIC {
