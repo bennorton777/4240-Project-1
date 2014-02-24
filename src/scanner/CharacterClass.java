@@ -61,16 +61,6 @@ public enum CharacterClass {
             return 2;
         }
     },
-    ESCAPE_CHAR {
-        public boolean resolve(Character c) {
-            if (c.equals('\\') || c.equals('"') || c.equals('n') || c.equals('t'))
-                return true;
-            return false;
-        }
-        public int getPriority() {
-            return 2;
-        }
-    },
     ID_CHAR {
         public boolean resolve(Character c) {
             return (LETTER.resolve(c) || DIGIT.resolve(c) || "_".equals(String.valueOf(c)));
