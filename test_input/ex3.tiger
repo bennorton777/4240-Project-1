@@ -1,8 +1,8 @@
 let
 
-        function retu_it(n:int) : int begin
+        function whil_it(n:int) : int begin
                 return(n);
         end;
 in
-        retu_it(5);
+        whil_it(5);
 end

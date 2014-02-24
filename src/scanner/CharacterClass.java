@@ -53,7 +53,7 @@ public enum CharacterClass {
     },
     ANY_STRING {
         public boolean resolve(Character c) {
-            if (!c.equals("\\") || !c.equals("\""))
+            if (!c.equals('\\') || !c.equals('"'))
                 return true;
             return false;
         }
@@ -63,7 +63,7 @@ public enum CharacterClass {
     },
     ESCAPE_CHAR {
         public boolean resolve(Character c) {
-            if (!c.equals('\\') || !c.equals('"'))
+            if (c.equals('\\') || c.equals('"') || c.equals('n') || c.equals('t'))
                 return true;
             return false;
         }

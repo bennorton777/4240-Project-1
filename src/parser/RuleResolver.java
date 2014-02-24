@@ -275,6 +275,20 @@ public class RuleResolver {
 		return nonTerminals.contains(top);
 	}
 	
+	public void printFirstFollowSets() {
+		String[] syms;
+		Set<String> allKeys = new HashSet<String>(follow.keySet());
+		allKeys.addAll(first.keySet());
+		syms = allKeys.toArray(new String[0]);
+		Arrays.sort(syms);
+		Set<String> fir,fol;
+		for (String sym : syms) {
+			fir = first.get(sym);
+			fol = follow.get(sym);
+			System.out.println(sym+"\t"+fir+"\t"+fol);
+		}
+	}
+	
 	public void printFollowSets() {
 		String[] syms;
 		System.out.println("Follow:");
@@ -300,15 +314,16 @@ public class RuleResolver {
 		syms = table.keySet().toArray(new String[0]);
 		Arrays.sort(syms);
 		for (String sym : syms) {
-			System.out.println("\t" + sym + ":\t" + table.get(sym));
+			System.out.println(sym + "," + table.get(sym));
 		}
 	}
 	
 	public static void main(String[] args) throws IOException, GrammarException {
 		RuleResolver r = new RuleResolver();
 		System.out.println("Grammar is OK");
-		r.printFirstSets();
-		r.printFollowSets();
+		//r.printFirstSets();
+		//r.printFollowSets();
+		//r.printFirstFollowSets();
 		r.printTable();
 	}
 
