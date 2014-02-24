@@ -1,17 +1,18 @@
-package scanner;
+package parser;
 
-public class ScannerException extends Exception {
-    private int line;
-    private int column;
+import scanner.Token;
+
+public class ParserException extends Exception {
+    private Token token;
     private String message;
-    public ScannerException(int line, int column, String message) {
-        this.line = line;
-        this.column = column;
+    public ParserException(Token token, String message) {
+        this.token = token;
         this.message = message;
     }
+
     public void prettyPrint() {
         System.out.print("\n");
-        String firstPart = String.format("Scanner error (line %d): ", line);
+        String firstPart = String.format("Parser error (line %d):  ", token.getLine());
         System.out.print(firstPart);
         // TODO print partial line
         System.out.print("\n");

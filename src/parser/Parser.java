@@ -8,6 +8,7 @@ import java.util.Stack;
 import parser.RuleResolver.GrammarException;
 
 import scanner.Scanner;
+import scanner.ScannerException;
 import scanner.Token;
 
 public class Parser {
@@ -50,14 +51,14 @@ public class Parser {
 							+ "' for input symbol '" + input + "'");
 				while (!top.equals(input)) {
 					if (!parserTable.isNonTerminal(top))
-						throw (new Exception("NoWhereToGo : Terminal symbol '"
+						throw (new ParserException(tok, "NoWhereToGo : Terminal symbol '"
 								+ top + "' does not match input symbol '"
 								+ input + "'"));
 					Rule expansion = parserTable.getRule(top, input);
 					if (show_flow)
 						System.out.println("Expanding rule:" + expansion);
 					if (expansion == null)
-						throw (new Exception("No expansion for symbol '" + top
+						throw (new ParserException(tok, "No expansion for symbol '" + top
 								+ "' on input symbol '" + input + "'"));
 					String rhs[] = expansion.getSeq();
 					for (int i = rhs.length - 1; i >= 0; i--) {
@@ -79,12 +80,16 @@ public class Parser {
 
 		} catch (GrammarException e) {
 			e.printStackTrace();
+        } catch (ScannerException e) {
+            e.prettyPrint();
+            System.out.println("unsuccessful parse");
+        } catch (ParserException e) {
+            e.prettyPrint();
+            System.out.println("unsuccessful parse");
 		} catch (FileNotFoundException e) {
 			System.out.println("Invalid filename..");
 		} catch (IOException e) {
 			System.out.println("IOException while reading file..");
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 

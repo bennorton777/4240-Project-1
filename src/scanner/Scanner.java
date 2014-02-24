@@ -101,7 +101,7 @@ public class Scanner {
                     // If the token value is empty, it means our scanner did not find a state for collected input.
                     // So, we throw an exception. Otherwise, we can just return the token.
                     if (cur.getValue() == "")
-                        throw new ScannerException(0, 0, "There is a syntax error in your code. Please correct this.");
+                        throw new ScannerException(_line, _column, "There is a syntax error in your code. Please correct this.");
                     if (debug) {
                         if (!firstToken) {
                             System.out.print(' ');
