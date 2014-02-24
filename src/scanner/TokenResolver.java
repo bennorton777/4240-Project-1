@@ -117,7 +117,9 @@ public class TokenResolver {
                 return state;
             }
         }
-        if ((state.getStateName() == StateName.CHARACTER_ACCEPT && CharacterClass.ALPHANUMERIC.resolve(c)) || (state.getStateName() == StateName.ID && CharacterClass.ID_CHAR.resolve(c))) {
+        if ((CharacterClass.ALPHANUMERIC.resolve(c) && (state.getStateName() == StateName.CHARACTER_ACCEPT || state.getStateName() == StateName.ID))
+                || ((CharacterClass.ID_CHAR.resolve(c) && (state.getStateName() == StateName.CHARACTER_ACCEPT && !state.getDisplayText().isEmpty()
+                    || state.getStateName() == StateName.ID)))) {
             State newState = new State(StateName.ID);
             newState.setDisplayText(state.getDisplayText()+String.valueOf(c));
             state = newState;
