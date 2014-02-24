@@ -23,8 +23,6 @@ public class Parser {
 		boolean show_flow = false;
 
 		try {
-			if (show_flow)
-				Scanner.printTokens(args[0]);
 			Scanner scanner = new Scanner(args[0]);
 			RuleResolver parserTable = new RuleResolver();
 
