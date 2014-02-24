@@ -1,5 +1,7 @@
 package test;
 
+import scanner.ScannerException;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,8 +65,8 @@ public class TestRunner {
                 e.printStackTrace();
                 return;
             }
-            expected=expected.trim().replaceAll("\\s+","");
-            String got = os.toString().trim().replaceAll("\\s+","");
+            expected=expected.trim().replaceAll("\r","");
+            String got = os.toString().trim().replaceAll("\r","");
             if (expected.equals(got)) {
                 System.out.println("Test "+input.getName()+" passed.");
             } else {
@@ -72,15 +74,6 @@ public class TestRunner {
                 System.out.println(expected);
                 System.out.println("but got");
                 System.out.println(got);
-//                int n = expected.length();
-//                char[] op = new char[1];
-//                expected.getChars(expected.length()-1, expected.length(), op, 0);
-//                System.out.println(op[0]);                
-//                char[] exchar = expected.toCharArray();
-//                char[] gotchar = got.toCharArray();
-//                for(int i =0 ;i<exchar.length;i++)
-//                	if(exchar[i]!=gotchar[i])
-//                	System.out.println(exchar[i]+"--"+gotchar[i]);                
                 return;
             }
         }
@@ -100,15 +93,6 @@ public class TestRunner {
     }
 
     private static void parseFile(File file) throws IOException {
-//        scanner.Scanner scanner = new scanner.Scanner(file.getAbsolutePath());
-//        scanner.Token token = scanner.getNextToken();
-//        while (token != null) {
-//            System.out.print(token.getType());
-//            token = scanner.getNextToken();
-//            if (token != null) System.out.print(" ");
-//        }
-//        System.out.print("\n");
-    	scanner.Scanner.printTokens(file.getAbsolutePath());
         parser.Parser.main(new String[]{file.getAbsolutePath()});
     }
 

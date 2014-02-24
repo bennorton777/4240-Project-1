@@ -23,17 +23,20 @@ public class Scanner {
 	 */
 
 	private char _currentChar;
+    private int _line;
+    private int _column;
 	BufferedReader _br;
 	TokenResolver _resolver;
 	boolean done = false;
+    static boolean debug = true;
+    boolean firstToken = true;
 
 	// The oldState refers to the state of the TokenResolver before reading in
 	// the most recent character,
 	// whereas newState refers to the state afterwards.
 	State oldState, newState = null;
 
-	public Scanner(String inputFileName) throws FileNotFoundException,
-			IOException {
+	public Scanner(String inputFileName) throws IOException {
 
 		_resolver = new TokenResolver();
 		_br = new BufferedReader(new FileReader(inputFileName));
@@ -41,11 +44,18 @@ public class Scanner {
 		cleanComments();
 
 		_currentChar = (char) _br.read();
+        _line = 1;
+        _column = 1;
+        if (_currentChar == '\n') {
+            _line++;
+            _column = 0;
+        }
 	}
 
-	public Token getNextToken() throws IOException {
+	public Token getNextToken() throws IOException, ScannerException {
+        Token cur;
 		if (done)
-			return new Token(RuleResolver.EOF_SYMBOL, RuleResolver.EOF_SYMBOL);
+			return new Token(RuleResolver.EOF_SYMBOL, RuleResolver.EOF_SYMBOL, _line, _column);
 
 		// We want the TokenResolver to reset its state after we add a token.
 		_resolver.reset();
@@ -72,34 +82,53 @@ public class Scanner {
 					// important, because states are mutated
 					// as the application runs, and we don't want our list of
 					// tokens to be corrupted.
-					return new Token(oldState.getStateName().name(),
-							oldState.getDisplayText());
+                    cur = new Token(oldState.getStateName().name(),
+                            oldState.getDisplayText(), _line, _column);
+                    if (debug) {
+                        if (!firstToken) {
+                            System.out.print(' ');
+                        } else firstToken = false;
+                        System.out.print(cur.getType());
+                    }
+                    return cur;
 				}
 				// The CHARACTER_ACCEPT state is not a terminal state, whereas
 				// ID is. However, it's not always
 				// clear that we are dealing with an ID until the newState
 				// becomes null.
 				else {
-					Token temp = new Token(StateName.ID.name(), oldState.getDisplayText());
+					cur = new Token(StateName.ID.name(), oldState.getDisplayText(), _line, _column);
                     // If the token value is empty, it means our scanner did not find a state for collected input.
                     // So, we throw an exception. Otherwise, we can just return the token.
-                    if (temp.getValue() == "")
-                        throw new IOException("There is a syntax error in your code. Please correct this.");
-                    return temp;
+                    if (cur.getValue() == "")
+                        throw new ScannerException(_line, _column, "There is a syntax error in your code. Please correct this.");
+                    if (debug) {
+                        if (!firstToken) {
+                            System.out.print(' ');
+                        } else firstToken = false;
+                        System.out.print(StateName.ID.name());
+                    }
+                    return cur;
 				}
 			}
 			_currentChar = (char) _br.read();
+            if (_currentChar == '\n') {
+                _line++;
+                _column = 0;
+            }
 		}
 		_br.close();
 		done = true;
-		if (newState.getStateName().name().equals("CHARACTER_ACCEPT"))
-			return new Token(RuleResolver.EOF_SYMBOL, RuleResolver.EOF_SYMBOL);
+        System.out.print('\n');
+		if (newState.getStateName().name().equals("CHARACTER_ACCEPT")) {
+			return new Token(RuleResolver.EOF_SYMBOL, RuleResolver.EOF_SYMBOL, _line, _column);
+        }
 		return new Token(newState.getStateName().name(),
-				newState.getDisplayText());
+				newState.getDisplayText(), _line, _column);
 	}
 
 	// DEPRECATED
-	public List<Token> getTokens() throws IOException {
+	public List<Token> getTokens() throws IOException, ScannerException {
 		List<Token> tokens = new ArrayList<Token>();
 		Token token = getNextToken();
 		while (!token.getType().equals(RuleResolver.EOF_SYMBOL)) {
@@ -144,17 +173,4 @@ public class Scanner {
 		_br.close();
 		_br = new BufferedReader(new FileReader("clean.txt"));
 	}
-
-	public static void printTokens(String fname) throws FileNotFoundException,
-			IOException {
-		Scanner scanner = new Scanner(fname);
-		Token token = scanner.getNextToken();
-		while (!token.getType().equals(RuleResolver.EOF_SYMBOL)) {
-			System.out.print(token.getType());
-			token = scanner.getNextToken();
-			if (!token.getType().equals(RuleResolver.EOF_SYMBOL)) System.out.print(" ");						
-		}
-		System.out.print("\n");
-	}
-
 }
