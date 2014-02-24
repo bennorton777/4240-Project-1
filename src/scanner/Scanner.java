@@ -100,8 +100,9 @@ public class Scanner {
 					cur = new Token(StateName.ID.name(), oldState.getDisplayText(), _line, _column);
                     // If the token value is empty, it means our scanner did not find a state for collected input.
                     // So, we throw an exception. Otherwise, we can just return the token.
-                    if (cur.getValue() == "")
-                        throw new ScannerException(_line, _column, "There is a syntax error in your code. Please correct this.");
+                    if (cur.getValue().isEmpty()) {
+                        throw new ScannerException(_line, _column, "\""+_currentChar+"\" does not begin a valid token.");
+                    }
                     if (debug) {
                         if (!firstToken) {
                             System.out.print(' ');
