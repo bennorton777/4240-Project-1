@@ -153,9 +153,10 @@ public class Scanner {
 				String scan = "";
 				while (!scan.endsWith("*/")) {
 					c = String.valueOf((char) _br.read());
+                    if (c.equals("\n"))
+                        symbols.add(c);
 					scan += c;
 				}
-				c = String.valueOf((char) _br.read());
 				parsingComment = false;
 			}
 			c = String.valueOf((char) _br.read());

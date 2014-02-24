@@ -1,4 +1,5 @@
-/* This tests invalid characters and continuation after scanner error. */
+/* This tests invalid characters, line numbering with comments,
+ and continuation after scanner error. */
 let
     var .:int := 10;
 in
