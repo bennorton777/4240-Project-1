@@ -22,6 +22,7 @@ public class Scanner {
 	 * @throws IOException
 	 */
 
+    private String filename;
 	private char _currentChar;
     private int _line;
     private int _column;
@@ -37,7 +38,7 @@ public class Scanner {
 	State oldState, newState = null;
 
 	public Scanner(String inputFileName) throws IOException {
-
+        filename = inputFileName;
 		_resolver = new TokenResolver();
 		_br = new BufferedReader(new FileReader(inputFileName));
 		// This function changes the file the buffered reader points at.
@@ -83,7 +84,7 @@ public class Scanner {
 					// as the application runs, and we don't want our list of
 					// tokens to be corrupted.
                     cur = new Token(oldState.getStateName().name(),
-                            oldState.getDisplayText(), _line, _column);
+                            oldState.getDisplayText(), _line, _column-1);
                     if (debug) {
                         if (!firstToken) {
                             System.out.print(' ');
@@ -97,11 +98,11 @@ public class Scanner {
 				// clear that we are dealing with an ID until the newState
 				// becomes null.
 				else {
-					cur = new Token(StateName.ID.name(), oldState.getDisplayText(), _line, _column);
+					cur = new Token(StateName.ID.name(), oldState.getDisplayText(), _line, _column-1);
                     // If the token value is empty, it means our scanner did not find a state for collected input.
                     // So, we throw an exception. Otherwise, we can just return the token.
                     if (cur.getValue().isEmpty()) {
-                        throw new ScannerException(_line, _column, "\""+_currentChar+"\" does not begin a valid token.");
+                        throw new ScannerException(filename, _line, _column, "\""+_currentChar+"\" does not begin a valid token.");
                     }
                     if (debug) {
                         if (!firstToken) {
@@ -113,6 +114,7 @@ public class Scanner {
 				}
 			}
 			_currentChar = (char) _br.read();
+            _column++;
             if (_currentChar == '\n') {
                 _line++;
                 _column = 0;
@@ -122,10 +124,10 @@ public class Scanner {
 		done = true;
         System.out.print('\n');
 		if (newState.getStateName().name().equals("CHARACTER_ACCEPT")) {
-			return new Token(RuleResolver.EOF_SYMBOL, RuleResolver.EOF_SYMBOL, _line, _column);
+			return new Token(RuleResolver.EOF_SYMBOL, RuleResolver.EOF_SYMBOL, _line, _column-1);
         }
 		return new Token(newState.getStateName().name(),
-				newState.getDisplayText(), _line, _column);
+				newState.getDisplayText(), _line, _column-1);
 	}
 
 	// DEPRECATED

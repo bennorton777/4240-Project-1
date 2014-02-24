@@ -49,13 +49,13 @@ public class Parser {
                                 + "' for input symbol '" + input + "'");
                     while (!top.equals(input)) {
                         if (!parserTable.isNonTerminal(top))
-                            throw (new ParserException(tok, "\""+tok.getValue()
+                            throw (new ParserException(args[0], tok, "\""+tok.getValue()
                                     + "\" is not a valid token. Expected "+Token.prettyType(top)+"."));
                         Rule expansion = parserTable.getRule(top, input);
                         if (show_flow)
                             System.out.println("Expanding rule:" + expansion);
                         if (expansion == null)
-                            throw (new ParserException(tok, "\""+tok.getValue()
+                            throw (new ParserException(args[0], tok, "\""+tok.getValue()
                                     + "\" is not a valid token. Expected "
                                     + Token.prettyTypes(parserTable.getFirstSet(top))+"."));
                         String rhs[] = expansion.getSeq();

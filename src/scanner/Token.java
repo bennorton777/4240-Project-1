@@ -69,7 +69,7 @@ public class Token {
         for (String type : types) {
             if (i > 0 && i < types.size()-1) {
                 sb.append(", ");
-            } else if (i == types.size()-1) {
+            } else if (i > 0 && i == types.size()-1) {
                 if (types.size() > 2) {
                     sb.append(", or ");
                 } else {

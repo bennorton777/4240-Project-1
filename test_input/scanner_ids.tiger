@@ -8,7 +8,6 @@ let
     var for1 : int;
     var fo1 : int;
     var _a : int;
-    var 1a : int;
 in
     printi(x);
 end

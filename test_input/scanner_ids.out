@@ -1,8 +1,5 @@
 LET VAR ID COMMA ID COLON ID SEMI VAR ID COMMA ID COLON ID SEMI VAR ID COMMA ID COMMA ID COLON ID ASSIGN STRLIT SEMI VAR ID COLON ID SEMI VAR ID COLON ID SEMI VAR ID COLON ID SEMI VAR ID COLON ID SEMI VAR
 Scanner error (line 10): var _<---
                          "_" does not begin a valid token.
-COLON ID SEMI VAR
-Scanner error (line 11): var 1a<---
-                         Something here
 ID COLON ID SEMI IN ID LPAREN ID RPAREN SEMI END
 unsuccessful parse
