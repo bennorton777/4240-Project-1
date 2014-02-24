@@ -1,0 +1,9 @@
+let
+        var s : string := "Hello!\nHow are you?\   \I'm fine\t and you? \^C\123Just testing out different things.";
+        var s_1 : string := "What happens if I use a \ \?";
+        var s_2 : string := "";
+        var s_3 : string := "\456";
+        var s_4 : string := "\n\t\\\"\789\   \";
+in
+        print(5);
+end
