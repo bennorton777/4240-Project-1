@@ -19,22 +19,21 @@ public class TestRunner {
             }
             inputs = getTestFiles(folder);
             Collections.sort(inputs);
-        } else if (args.length == 1) {
-            File file = new File(args[0]);
-            if (!file.exists()) {
-                System.err.println(file.getAbsolutePath() + " does not exist.");
-                return;
-            }
-            File outFile = new File(file.getAbsolutePath().replaceAll("\\.tiger$",".out"));
-            if (!outFile.exists()) {
-                System.err.println(outFile.getAbsolutePath() + " does not exist.");
-                return;
-            }
-            inputs = new ArrayList<File>();
-            inputs.add(file);
         } else {
-            System.err.println("Usage: TestRunner [tiger_file]");
-            return;
+            inputs = new ArrayList<File>();
+            for (String filename : args) {
+                File file = new File(filename);
+                if (!file.exists()) {
+                    System.err.println(file.getAbsolutePath() + " does not exist.");
+                    return;
+                }
+                if (!file.getName().endsWith(".tiger")) continue;
+                if (!(new File(file.getAbsolutePath().replaceAll("\\.tiger$",".out")).exists())) {
+                    System.err.println("No .out file for "+file.getAbsolutePath()+", skipping");
+                    continue;
+                }
+                inputs.add(file);
+            }
         }
 
         PrintStream oldOut = System.out;
@@ -74,7 +73,6 @@ public class TestRunner {
                 System.out.println(expected);
                 System.out.println("but got");
                 System.out.println(got);
-                return;
             }
         }
     }
