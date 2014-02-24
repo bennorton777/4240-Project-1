@@ -100,8 +100,9 @@ public class Scanner {
 					cur = new Token(StateName.ID.name(), oldState.getDisplayText(), _line, _column);
                     // If the token value is empty, it means our scanner did not find a state for collected input.
                     // So, we throw an exception. Otherwise, we can just return the token.
-                    if (cur.getValue() == "")
-                        throw new ScannerException(_line, _column, "There is a syntax error in your code. Please correct this.");
+                    if (cur.getValue().isEmpty()) {
+                        throw new ScannerException(_line, _column, "\""+_currentChar+"\" does not begin a valid token.");
+                    }
                     if (debug) {
                         if (!firstToken) {
                             System.out.print(' ');
@@ -152,9 +153,10 @@ public class Scanner {
 				String scan = "";
 				while (!scan.endsWith("*/")) {
 					c = String.valueOf((char) _br.read());
+                    if (c.equals("\n"))
+                        symbols.add(c);
 					scan += c;
 				}
-				c = String.valueOf((char) _br.read());
 				parsingComment = false;
 			}
 			c = String.valueOf((char) _br.read());
@@ -173,4 +175,13 @@ public class Scanner {
 		_br.close();
 		_br = new BufferedReader(new FileReader("clean.txt"));
 	}
+
+    public void afterError() throws IOException {
+        firstToken = true;
+        _currentChar = (char) _br.read();
+        if (_currentChar == '\n') {
+            _line++;
+            _column = 0;
+        }
+    }
 }

@@ -1,0 +1,14 @@
+/* This is an exhaustive test of ID's */
+let
+    var x, y :int;
+    var X,Y:int;
+    var f, fo, foo:string := "";
+    var forblah :string;
+    var for_blah :int;
+    var for1 : int;
+    var fo1 : int;
+    var 1a : int;
+    var _a : int;
+in
+    printi(x);
+end

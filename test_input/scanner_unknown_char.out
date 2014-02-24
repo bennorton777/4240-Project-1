@@ -1,0 +1,8 @@
+LET VAR
+Scanner error (line 4): var .<---
+                        "." does not begin a valid token.
+COLON ID ASSIGN INTLIT SEMI IN ID LPAREN
+Scanner error (line 6): printi(.<---
+                        "." does not begin a valid token.
+RPAREN SEMI END
+unsuccessful parse
