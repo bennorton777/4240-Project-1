@@ -56,6 +56,10 @@ public class RuleResolver {
 		fillTable();
 	}
 
+    public Set<String> getFirstSet(String nonTerminal) {
+        return first.get(nonTerminal);
+    }
+
 	private void fillTable() throws GrammarException {
 		for (Rule rule : ruleList) {
 			// need to compute FIRST for this rule only
