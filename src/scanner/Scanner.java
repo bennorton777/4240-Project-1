@@ -173,4 +173,13 @@ public class Scanner {
 		_br.close();
 		_br = new BufferedReader(new FileReader("clean.txt"));
 	}
+
+    public void afterError() throws IOException {
+        firstToken = true;
+        _currentChar = (char) _br.read();
+        if (_currentChar == '\n') {
+            _line++;
+            _column = 0;
+        }
+    }
 }

@@ -2,7 +2,6 @@ package parser;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 import java.util.Stack;
 
 import parser.RuleResolver.GrammarException;
@@ -23,69 +22,82 @@ public class Parser {
 
 		boolean show_flow = false;
 
+        Scanner scanner;
+        RuleResolver parserTable;
 		try {
-			Scanner scanner = new Scanner(args[0]);
-			RuleResolver parserTable = new RuleResolver();
-
-			// List<Token> tokens = scanner.getTokens();
-			// tokens.add(new Token(RuleResolver.EOF_SYMBOL,
-			// RuleResolver.EOF_SYMBOL));
-
-			// for (Token tok : tokens) {
-			// System.err.print(tok.getType() + " ");
-			// }
-
-			symbolsToMatch.push(RuleResolver.EOF_SYMBOL);
-			symbolsToMatch.push(parserTable.START_SYMBOL);
-
-			// parserTable.printTable();
-			// System.out.println();
-
-			String input, top;
-			Token tok = scanner.getNextToken();
-			while (!tok.getType().equals(RuleResolver.EOF_SYMBOL)) {
-				input = tok.getType();
-				top = symbolsToMatch.pop();
-				if (show_flow)
-					System.out.println("Matching symbol '" + top
-							+ "' for input symbol '" + input + "'");
-				while (!top.equals(input)) {
-					if (!parserTable.isNonTerminal(top))
-						throw (new ParserException(tok, "NoWhereToGo : Terminal symbol '"
-								+ top + "' does not match input symbol '"
-								+ input + "'"));
-					Rule expansion = parserTable.getRule(top, input);
-					if (show_flow)
-						System.out.println("Expanding rule:" + expansion);
-					if (expansion == null)
-						throw (new ParserException(tok, "No expansion for symbol '" + top
-								+ "' on input symbol '" + input + "'"));
-					String rhs[] = expansion.getSeq();
-					for (int i = rhs.length - 1; i >= 0; i--) {
-						symbolsToMatch.push(rhs[i]);
-					}
-
-					do {
-						top = symbolsToMatch.pop();
-					} while (top.equals(RuleResolver.NULL_SYMBOL));
-					if (show_flow)
-						System.out.println("Loop matching symbol '" + top
-								+ "' for input symbol '" + input + "'");
-				}
-				tok = scanner.getNextToken();
-				if (show_flow)
-					System.out.println();
-			}
-			System.out.println("successful parse");
-
-		} catch (GrammarException e) {
+			scanner = new Scanner(args[0]);
+			parserTable = new RuleResolver();
+        } catch (GrammarException e) {
 			e.printStackTrace();
-        } catch (ScannerException e) {
-            e.prettyPrint();
-            System.out.println("unsuccessful parse");
-        } catch (ParserException e) {
-            e.prettyPrint();
-            System.out.println("unsuccessful parse");
+            return;
+        } catch (IOException e) {
+			System.out.println("IOException while reading file..");
+            return;
+		}
+        try {
+            symbolsToMatch.push(RuleResolver.EOF_SYMBOL);
+            symbolsToMatch.push(parserTable.START_SYMBOL);
+
+            String input, top;
+            try {
+                Token tok = scanner.getNextToken();
+                while (!tok.getType().equals(RuleResolver.EOF_SYMBOL)) {
+                    input = tok.getType();
+                    top = symbolsToMatch.pop();
+                    if (show_flow)
+                        System.out.println("Matching symbol '" + top
+                                + "' for input symbol '" + input + "'");
+                    while (!top.equals(input)) {
+                        if (!parserTable.isNonTerminal(top))
+                            throw (new ParserException(tok, "NoWhereToGo : Terminal symbol '"
+                                    + top + "' does not match input symbol '"
+                                    + input + "'"));
+                        Rule expansion = parserTable.getRule(top, input);
+                        if (show_flow)
+                            System.out.println("Expanding rule:" + expansion);
+                        if (expansion == null)
+                            throw (new ParserException(tok, "No expansion for symbol '" + top
+                                    + "' on input symbol '" + input + "'"));
+                        String rhs[] = expansion.getSeq();
+                        for (int i = rhs.length - 1; i >= 0; i--) {
+                            symbolsToMatch.push(rhs[i]);
+                        }
+
+                        do {
+                            top = symbolsToMatch.pop();
+                        } while (top.equals(RuleResolver.NULL_SYMBOL));
+                        if (show_flow)
+                            System.out.println("Loop matching symbol '" + top
+                                    + "' for input symbol '" + input + "'");
+                    }
+                    tok = scanner.getNextToken();
+                    if (show_flow)
+                        System.out.println();
+                }
+                System.out.println("successful parse");
+
+            } catch (ScannerException e) {
+                e.prettyPrint();
+                // print the rest of the tokens anyway
+                Token tok = null;
+                scanner.afterError();
+                do {
+                    try {
+                        tok = scanner.getNextToken();
+                    } catch (ScannerException ex) {
+                        ex.prettyPrint();
+                        scanner.afterError();
+                        tok = new Token("DUMMY", "DUMMY", 0, 0);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                        break;
+                    }
+                } while(tok != null && !tok.getType().equals(RuleResolver.EOF_SYMBOL));
+                System.out.println("unsuccessful parse");
+            } catch (ParserException e) {
+                e.prettyPrint();
+                System.out.println("unsuccessful parse");
+            }
 		} catch (FileNotFoundException e) {
 			System.out.println("Invalid filename..");
 		} catch (IOException e) {
