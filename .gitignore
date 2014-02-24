@@ -9,3 +9,6 @@ out/
 .settings/
 *.class
 clean.txt
+src/.metadata
+org*/*
+bin/
