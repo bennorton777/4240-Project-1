@@ -1,0 +1,25 @@
+TODO
+Initial
+[ ] Wait for working phase 1 code (or not)
+[ ] Regactor keywords as IDs
+[ ] Fix scanning of strings
+[?] More error messages
+
+Part 1: Parse Tree
+::Steven
+[ ] Interface
+[ ] Stub
+[ ] Include Line numbers (Use existing token class)
+
+Part 2: Symbol Table
+::Archie
+[ ] Interface
+[ ] Stub
+
+Part 3: Semantic Table
+Dependencies: Part 1 and 2 Stubs
+::Ben
+
+Part 4: Intermediate Code
+Dependencies: Part 1 and 2 Stubs
+::Michael
