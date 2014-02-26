@@ -16,7 +16,7 @@ import parser.RuleResolver;
  */
 public class FakeParser {
     public static void main(String[] args) throws IOException {
-    	
+
         System.out.println("Incremental:");
         // do it incrementally
         Scanner scanner = new Scanner("test.txt");

@@ -11,29 +11,29 @@ import scanner.ScannerException;
 import scanner.Token;
 
 public class Parser {
-	public static void main(String[] args) {
+    public static void main(String[] args) {
 
-		Stack<String> symbolsToMatch = new Stack<String>();
+        Stack<String> symbolsToMatch = new Stack<String>();
 
-		if (args.length < 1) {
-			System.out.println("Provide a tiger program to parse..");
-			return;
-		}
+        if (args.length < 1) {
+            System.out.println("Provide a tiger program to parse..");
+            return;
+        }
 
-		boolean show_flow = false;
+        boolean show_flow = false;
 
         Scanner scanner;
         RuleResolver parserTable;
-		try {
-			scanner = new Scanner(args[0]);
-			parserTable = new RuleResolver();
+        try {
+            scanner = new Scanner(args[0]);
+            parserTable = new RuleResolver();
         } catch (GrammarException e) {
-			e.printStackTrace();
+            e.printStackTrace();
             return;
         } catch (IOException e) {
-			System.out.println("IOException while reading file..");
+            System.out.println("IOException while reading file..");
             return;
-		}
+        }
         try {
             symbolsToMatch.push(RuleResolver.EOF_SYMBOL);
             symbolsToMatch.push(parserTable.START_SYMBOL);
@@ -98,18 +98,18 @@ public class Parser {
                 e.prettyPrint();
                 System.out.println("unsuccessful parse");
             }
-		} catch (FileNotFoundException e) {
-			System.out.println("Invalid filename..");
-		} catch (IOException e) {
-			System.out.println("IOException while reading file..");
-		}
-	}
+        } catch (FileNotFoundException e) {
+            System.out.println("Invalid filename..");
+        } catch (IOException e) {
+            System.out.println("IOException while reading file..");
+        }
+    }
 
-	public static void printStack(Stack<String> symbolsToMatch) {
-		System.out.print("Stack: ");
-		for (String sym : symbolsToMatch) {
-			System.out.print(sym + " ");
-		}
-	}
+    public static void printStack(Stack<String> symbolsToMatch) {
+        System.out.print("Stack: ");
+        for (String sym : symbolsToMatch) {
+            System.out.print(sym + " ");
+        }
+    }
 
 }
