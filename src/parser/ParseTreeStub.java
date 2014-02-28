@@ -13,6 +13,8 @@ public class ParseTreeStub {
      *
      * All "S" nodes have empty values for type/value and 0 for linenum/column.
      * In fact, /all/ of these are going to have 0 for line number/column. This can be added later.
+     *
+     * Please see the picture I uploaded to github to see how (I think) the parse tree should look like.
      */
     private ParseTreeNode head;
 
