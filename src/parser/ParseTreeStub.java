@@ -20,42 +20,42 @@ public class ParseTreeStub {
 
     public ParseTreeStub() {
         head = new ParseTreeNode(new Token("", "", 0, 0));
-        head.setOne(new ParseTreeNode(new Token("", "", 0, 0)));
-        head.setTwo(new ParseTreeNode(new Token("EQ", "=", 0, 0)));
-        head.setThree(new ParseTreeNode(new Token("", "", 0, 0)));
+        head.addChild(new Token("", "", 0, 0));
+        head.addChild(new Token("EQ", "=", 0, 0));
+        head.addChild(new Token("", "", 0, 0));
 
-        ParseTreeNode two = head.getOne();
-        two.setOne(new ParseTreeNode(new Token("", "", 0, 0)));
-        two.setTwo(new ParseTreeNode(new Token("", "", 0, 0)));
+        ParseTreeNode two = head.getChild(0);
+        two.addChild(new Token("", "", 0, 0));
+        two.addChild(new Token("", "", 0, 0));
 
-        ParseTreeNode three = two.getOne();
-        three.setOne(new ParseTreeNode(new Token("TYPE", "type", 0, 0)));
+        ParseTreeNode three = two.getChild(0);
+        three.addChild(new Token("TYPE", "type", 0, 0));
 
-        ParseTreeNode four = two.getTwo();
-        four.setOne(new ParseTreeNode(new Token("ID", "ArrayInt", 0, 0)));
+        ParseTreeNode four = two.getChild(1);
+        four.addChild(new Token("ID", "ArrayInt", 0, 0));
 
-        ParseTreeNode five = head.getThree();
-        five.setOne(new ParseTreeNode(new Token("", "", 0, 0)));
-        five.setTwo(new ParseTreeNode(new Token("LBRACK", "[", 0, 0)));
-        five.setThree(new ParseTreeNode(new Token("", "", 0, 0)));
-        five.setFour(new ParseTreeNode(new Token("RBRACK", "]", 0, 0)));
-        five.setFive(new ParseTreeNode(new Token("OF", "of", 0, 0)));
-        five.setSix(new ParseTreeNode(new Token("", "", 0, 0)));
-        five.setSeven(new ParseTreeNode(new Token("SEMI", ";", 0, 0)));
+        ParseTreeNode five = head.getChild(2);
+        five.addChild(new Token("", "", 0, 0));
+        five.addChild(new Token("LBRACK", "[", 0, 0));
+        five.addChild(new Token("", "", 0, 0));
+        five.addChild(new Token("RBRACK", "]", 0, 0));
+        five.addChild(new Token("OF", "of", 0, 0));
+        five.addChild(new Token("", "", 0, 0));
+        five.addChild(new Token("SEMI", ";", 0, 0));
 
-        ParseTreeNode six = five.getOne();
-        six.setOne(new ParseTreeNode(new Token("ARRAY", "array", 0, 0)));
+        ParseTreeNode six = five.getChild(0);
+        six.addChild(new Token("ARRAY", "array", 0, 0));
 
-        ParseTreeNode seven = five.getThree();
-        six.setOne(new ParseTreeNode(new Token("INT", "100", 0, 0)));
+        ParseTreeNode seven = five.getChild(2);
+        seven.addChild(new Token("INT", "100", 0, 0));
 
-        ParseTreeNode eight = five.getSix();
-        six.setOne(new ParseTreeNode(new Token("ID", "int", 0, 0)));
+        ParseTreeNode eight = five.getChild(5);
+        eight.addChild(new Token("ID", "int", 0, 0));
 
         System.out.println("          (S)");
         System.out.println("  (S)      =            (S)");
-        System.out.println("(S) (S)         (S)  [  (S)  ]  (S)  ;");
-        System.out.println("type ID        array    int     ID");
+        System.out.println("(S) (S)         (S)  [  (S)  ]  OF  (S)  ;");
+        System.out.println("type ID        array    int         ID");
     }
 
     public static void main(String[] args) {

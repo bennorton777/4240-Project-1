@@ -2,123 +2,73 @@ package parser;
 
 import scanner.Token;
 
+import java.util.ArrayList;
+
 /**
  * Created by sjmitchell on 2/27/14.
  *
  * So several functions are missing.
  * For one, you can't remove children nodes.
  *
- * Also, the max number a children can have is seven-- this is very rudimentary and not at all efficient,
- * but it'll do for a stub. I'll come up with something a little more elegant when I have time.
+ * An array list keeps track of the number of children a ParseTreeNode has. The index for children starts at 0.
+ * (i.e. The left-most child would be index 0)
  *
- * For now, there are getters and setters for all seven branches. Please utilize the branches in
- * ascending numerical order. I am not checking this! (Not putting that much work into an implementation I'm planning
- * to change.)
+ * For now, there are getters and setters for everything. Branches will be stored in the order that you add them.
+ *
+ * Feel free to make as few or many changes as you want.
  */
 public class ParseTreeNode {
-    private int priority;
-    private int size;
     private Token t;
-    private ParseTreeNode one;
-    private ParseTreeNode two;
-    private ParseTreeNode three;
-    private ParseTreeNode four;
-    private ParseTreeNode five;
-    private ParseTreeNode six;
-    private ParseTreeNode seven;
 
+    private ArrayList<ParseTreeNode> children;
+
+    /**
+     * Instantiates the ParseTreeNode with 0 children.
+     * @param t
+     */
     public ParseTreeNode (Token t) {
         this.t = t;
-        this.size = 0;
+        this.children = new ArrayList<ParseTreeNode>();
     }
 
-    public void setOne(ParseTreeNode one) {
-        if (this.one == null)
-            size++;
-        this.one = one;
+    /**
+     * Adds a branch to the node
+     * @param c The child to be added
+     */
+    public void addChild(Token c) {
+        children.add(new ParseTreeNode(c));
     }
 
-    public void setTwo(ParseTreeNode two) {
-        if (this.two == null)
-            size++;
-        this.two = two;
-    }
-
-    public void setThree(ParseTreeNode three) {
-        if (this.three == null)
-            size++;
-        this.three = three;
-    }
-
-    public void setFour(ParseTreeNode four) {
-        if (this.four == null)
-            size++;
-        this.four = four;
-    }
-
-    public void setFive(ParseTreeNode five) {
-        if (this.five == null)
-            size++;
-        this.five = five;
-    }
-
-    public void setSix(ParseTreeNode six) {
-        if (this.six == null)
-            size++;
-        this.six = six;
-    }
-
-    public void setSeven(ParseTreeNode seven) {
-        if (this.seven == null)
-            size++;
-        this.seven = seven;
-    }
-
+    /**
+     * Sets the token of the node
+     * @param t The node's new token
+     */
     public void setT(Token t) {
         this.t = t;
     }
 
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
+    /**
+     * Gets the token of the node. Currently returns an empty token if it is a substitution node.
+     * @return The token of the node
+     */
     public Token getT() {
         return t;
     }
 
-    public ParseTreeNode getOne() {
-        return one;
-    }
-
-    public ParseTreeNode getTwo() {
-        return two;
-    }
-
-    public ParseTreeNode getThree() {
-        return three;
-    }
-
-    public ParseTreeNode getFour() {
-        return four;
-    }
-
-    public ParseTreeNode getFive() {
-        return five;
-    }
-
-    public ParseTreeNode getSix() {
-        return six;
-    }
-
-    public ParseTreeNode getSeven() {
-        return seven;
-    }
-
-    public int getPriority() {
-        return priority;
-    }
-
+    /**
+     * Gets the number of branches that the node has.
+     * @return The number of branches
+     */
     public int getSize() {
-        return size;
+        return children.size();
+    }
+
+    /**
+     * Gets the child i from the node
+     * @param i the index of the child (for example, the left-most child would be i=0)
+     * @return The node containing the child.
+     */
+    public ParseTreeNode getChild(int i) {
+        return children.get(i);
     }
 }
