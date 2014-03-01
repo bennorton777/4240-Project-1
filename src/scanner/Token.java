@@ -30,6 +30,10 @@ public class Token {
 
     public int getColumn() { return column; }
 
+    public String allDetails(){
+        return "\""+type+"\",\""+value+"\","+line+","+column;
+    }
+    
     @Override
     public String toString() {
         return "< " + type + " , " + value + " >";

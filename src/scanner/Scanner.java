@@ -130,17 +130,6 @@ public class Scanner {
                 newState.getDisplayText(), _line, _column-1);
     }
 
-    // DEPRECATED
-    public List<Token> getTokens() throws IOException, ScannerException {
-        List<Token> tokens = new ArrayList<Token>();
-        Token token = getNextToken();
-        while (!token.getType().equals(RuleResolver.EOF_SYMBOL)) {
-            tokens.add(token);
-            token = getNextToken();
-        }
-        return tokens;
-    }
-
     // TODO this will throw an IOException (or some exception, anyway) if given
     // an input program with fewer than two characters in it. That's pretty
     // dumb.
@@ -184,6 +173,26 @@ public class Scanner {
         if (_currentChar == '\n') {
             _line++;
             _column = 0;
+        }
+    }
+
+    // DEPRECATED but do not remove!! Useful for printing/debugging
+    public List<Token> getTokens() throws IOException, ScannerException {
+        List<Token> tokens = new ArrayList<Token>();
+        Token token = getNextToken();
+        while (!token.getType().equals(RuleResolver.EOF_SYMBOL)) {
+            tokens.add(token);
+            token = getNextToken();
+        }
+        return tokens;
+    }
+    
+    // DEPRECATED but do not remove!! Useful for printing/debugging
+    public static void main(String[] args) throws IOException, ScannerException{
+        Scanner scan = new Scanner("test_input/ex1.tiger");
+        List<Token> tokens = scan.getTokens();
+        for (Token tok : tokens) {
+            System.out.println(tok.allDetails());
         }
     }
 }

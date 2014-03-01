@@ -9,6 +9,7 @@ public class ParserException extends Exception {
     private String filename;
     private Token token;
     private String message;
+    
     public ParserException(String filename, Token token, String message) {
         this.filename = filename;
         this.token = token;
